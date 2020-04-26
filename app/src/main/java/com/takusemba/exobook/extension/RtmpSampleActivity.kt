@@ -11,11 +11,11 @@ import com.takusemba.exobook.R
 
 class RtmpSampleActivity : AppCompatActivity() {
 
+    private val player by lazy { SimpleExoPlayer.Builder(this).build() }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
-
-        val player = SimpleExoPlayer.Builder(this).build()
 
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
@@ -26,6 +26,21 @@ class RtmpSampleActivity : AppCompatActivity() {
 
         player.prepare(mediaSource)
         player.playWhenReady = true
+    }
+
+    override fun onStart() {
+        super.onStart()
+        player.playWhenReady = true
+    }
+
+    override fun onStop() {
+        super.onStop()
+        player.playWhenReady = false
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        player.release()
     }
 
     companion object {

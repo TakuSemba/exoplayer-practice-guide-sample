@@ -22,12 +22,11 @@ import java.util.concurrent.Executors
 class NetworkSampleActivity : AppCompatActivity() {
 
     private val userAgent by lazy { Util.getUserAgent(this, "SampleApp") }
+    private val player by lazy { SimpleExoPlayer.Builder(this).build() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
-
-        val player = SimpleExoPlayer.Builder(this).build()
 
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
@@ -75,6 +74,21 @@ class NetworkSampleActivity : AppCompatActivity() {
         stopNetLog()
     }
 
+    override fun onStart() {
+        super.onStart()
+        player.playWhenReady = true
+    }
+
+    override fun onStop() {
+        super.onStop()
+        player.playWhenReady = false
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        player.release()
+    }
+
     companion object {
 
         private val URI =
@@ -82,8 +96,6 @@ class NetworkSampleActivity : AppCompatActivity() {
 
         private val TYPE = DataSourceFactoryType.OK_HTTP
 
-        enum class DataSourceFactoryType {
-            DEFAULT, OK_HTTP, CRONET
-        }
+        enum class DataSourceFactoryType { DEFAULT, OK_HTTP, CRONET }
     }
 }

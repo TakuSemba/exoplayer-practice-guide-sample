@@ -13,10 +13,11 @@ import com.google.android.exoplayer2.util.Util
 
 class LeanbackSampleFragment : VideoSupportFragment() {
 
+    private val player by lazy { SimpleExoPlayer.Builder(requireContext()).build() }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val player = SimpleExoPlayer.Builder(requireContext()).build()
         val adapter = LeanbackPlayerAdapter(requireContext(), player, UPDATE_INTERVAL)
         val playerGlue = PlaybackTransportControlGlue(activity, adapter)
 
@@ -30,6 +31,21 @@ class LeanbackSampleFragment : VideoSupportFragment() {
             .createMediaSource(URI)
         player.prepare(mediaSource)
         player.playWhenReady = true
+    }
+
+    override fun onStart() {
+        super.onStart()
+        player.playWhenReady = true
+    }
+
+    override fun onStop() {
+        super.onStop()
+        player.playWhenReady = false
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        player.release()
     }
 
     companion object {

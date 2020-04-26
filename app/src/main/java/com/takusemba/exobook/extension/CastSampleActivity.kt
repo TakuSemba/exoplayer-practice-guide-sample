@@ -20,6 +20,8 @@ import com.takusemba.exobook.R
 
 class CastSampleActivity : AppCompatActivity() {
 
+    private val player by lazy { SimpleExoPlayer.Builder(this).build() }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
@@ -44,8 +46,6 @@ class CastSampleActivity : AppCompatActivity() {
             }
         })
 
-        val player = SimpleExoPlayer.Builder(this).build()
-
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
 
@@ -56,6 +56,21 @@ class CastSampleActivity : AppCompatActivity() {
 
         player.prepare(mediaSource)
         player.playWhenReady = true
+    }
+
+    override fun onStart() {
+        super.onStart()
+        player.playWhenReady = true
+    }
+
+    override fun onStop() {
+        super.onStop()
+        player.playWhenReady = false
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        player.release()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
