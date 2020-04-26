@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.TextView
+import com.takusemba.exobook.extension.ImaSampleActivity
 
 class SampleAdapter : BaseExpandableListAdapter() {
 
@@ -21,8 +22,8 @@ class SampleAdapter : BaseExpandableListAdapter() {
         return view
     }
 
-    override fun getGroup(groupPosition: Int): Pair<String, Array<String>> {
-        return SAMPLE_GROUP[groupPosition]
+    override fun getGroup(groupPosition: Int): SampleGroup {
+        return SAMPLE_GROUPS[groupPosition]
     }
 
     override fun getGroupId(groupPosition: Int): Long {
@@ -30,7 +31,7 @@ class SampleAdapter : BaseExpandableListAdapter() {
     }
 
     override fun getGroupCount(): Int {
-        return SAMPLE_GROUP.size
+        return SAMPLE_GROUPS.size
     }
 
     override fun getChildView(
@@ -42,12 +43,12 @@ class SampleAdapter : BaseExpandableListAdapter() {
     ): View {
         val view = convertView ?: LayoutInflater.from(parent.context)
             .inflate(android.R.layout.simple_list_item_1, parent, false)
-        val title = getChild(groupPosition, childPosition)
-        view.findViewById<TextView>(android.R.id.text1).text = title
+        val sample = getChild(groupPosition, childPosition)
+        view.findViewById<TextView>(android.R.id.text1).text = sample.title
         return view
     }
 
-    override fun getChild(groupPosition: Int, childPosition: Int): String {
+    override fun getChild(groupPosition: Int, childPosition: Int): Sample {
         val (_, samples) = getGroup(groupPosition)
         return samples[childPosition]
     }
@@ -71,32 +72,26 @@ class SampleAdapter : BaseExpandableListAdapter() {
 
     companion object {
 
-        private val CORE_SAMPLES = arrayOf(
-            "Chapter 1",
-            "Chapter 2",
-            "Chapter 3",
-            "Chapter 4",
-            "Chapter 5",
-            "Chapter 6",
-            "Chapter 7",
-            "Chapter 8",
-            "Chapter 9"
-        )
-
-        private val EXTENSION_SAMPLES = arrayOf(
-            "Chapter 1 (IMA)",
-            "Chapter 2 (Cast)",
-            "Chapter 3 (MediaSession)",
-            "Chapter 4 (Network)",
-            "Chapter 5 (Codec)",
-            "Chapter 6 (Scheduler)",
-            "Chapter 7 (RTMP)",
-            "Chapter 8 (Leanback)"
-        )
-
-        private val SAMPLE_GROUP = arrayOf(
-            Pair("Core Library", CORE_SAMPLES),
-            Pair("Extension Library", EXTENSION_SAMPLES)
+        val SAMPLE_GROUPS = listOf(
+            SampleGroup(
+                "Core Library",
+                listOf(
+                    Sample("Chapter 1", ImaSampleActivity::class.java)
+                )
+            ),
+            SampleGroup(
+                "Extension Library",
+                listOf(
+                    Sample("Chapter 1 (IMA)", ImaSampleActivity::class.java),
+                    Sample("Chapter 2 (Cast)", ImaSampleActivity::class.java),
+                    Sample("Chapter 3 (MediaSession)", ImaSampleActivity::class.java),
+                    Sample("Chapter 4 (Network)", ImaSampleActivity::class.java),
+                    Sample("Chapter 5 (Codec)", ImaSampleActivity::class.java),
+                    Sample("Chapter 6 (Scheduler)", ImaSampleActivity::class.java),
+                    Sample("Chapter 7 (RTMP)", ImaSampleActivity::class.java),
+                    Sample("Chapter 8 (Leanback)", ImaSampleActivity::class.java)
+                )
+            )
         )
     }
 }

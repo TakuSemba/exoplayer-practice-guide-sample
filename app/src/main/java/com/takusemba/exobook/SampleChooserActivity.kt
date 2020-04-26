@@ -1,12 +1,12 @@
 package com.takusemba.exobook
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.ExpandableListView
 import androidx.appcompat.app.AppCompatActivity
+import com.takusemba.exobook.SampleAdapter.Companion.SAMPLE_GROUPS
 
 class SampleChooserActivity : AppCompatActivity(), ExpandableListView.OnChildClickListener {
 
@@ -31,14 +31,9 @@ class SampleChooserActivity : AppCompatActivity(), ExpandableListView.OnChildCli
         childPosition: Int,
         id: Long
     ): Boolean {
-
+        val sample = SAMPLE_GROUPS[groupPosition].samples[childPosition]
+        val intent = Intent(this, sample.destination)
+        startActivity(intent)
         return true
-    }
-
-    companion object {
-
-        fun createIntent(context: Context): Intent {
-            return Intent(context, SampleChooserActivity::class.java)
-        }
     }
 }
