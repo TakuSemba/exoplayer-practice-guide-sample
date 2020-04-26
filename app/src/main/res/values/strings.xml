@@ -5,4 +5,7 @@
 
     <string name="channel_name">Channel Name</string>
     <string name="channel_description">Channel Description</string>
+
+    <string name="button_start_background_playback">Start Background Playback</string>
+    <string name="button_start_download">Start Download</string>
 </resources>

@@ -89,7 +89,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
     }
 
     private val mediaSession by lazy { MediaSessionCompat(application, TAG) }
-    private val userAgent by lazy { Util.getUserAgent(application, "demo") }
+    private val userAgent by lazy { Util.getUserAgent(application, "SampleApp") }
     private val dataSourceFactory by lazy { DefaultDataSourceFactory(application, userAgent) }
     private val player by lazy { SimpleExoPlayer.Builder(this).build() }
     private val mediaSessionConnector by lazy { MediaSessionConnector(mediaSession) }

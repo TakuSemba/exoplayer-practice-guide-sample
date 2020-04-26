@@ -6,9 +6,11 @@ import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.TextView
 import com.takusemba.exobook.extension.CastSampleActivity
+import com.takusemba.exobook.extension.CodecSampleActivity
 import com.takusemba.exobook.extension.ImaSampleActivity
 import com.takusemba.exobook.extension.MediaSessionSampleActivity
 import com.takusemba.exobook.extension.NetworkSampleActivity
+import com.takusemba.exobook.extension.SchedulerSampleActivity
 
 class SampleAdapter : BaseExpandableListAdapter() {
 
@@ -90,7 +92,7 @@ class SampleAdapter : BaseExpandableListAdapter() {
                     Sample("Chapter 3 (MediaSession)", MediaSessionSampleActivity::class.java),
                     Sample("Chapter 4 (Network)", NetworkSampleActivity::class.java),
                     Sample("Chapter 5 (Codec)", CodecSampleActivity::class.java),
-                    Sample("Chapter 6 (Scheduler)", ImaSampleActivity::class.java),
+                    Sample("Chapter 6 (Scheduler)", SchedulerSampleActivity::class.java),
                     Sample("Chapter 7 (RTMP)", ImaSampleActivity::class.java),
                     Sample("Chapter 8 (Leanback)", ImaSampleActivity::class.java)
                 )
