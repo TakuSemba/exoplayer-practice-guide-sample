@@ -20,9 +20,6 @@ import com.takusemba.exobook.R
 
 class CastSampleActivity : AppCompatActivity() {
 
-    private val uri =
-        Uri.parse("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
@@ -36,7 +33,7 @@ class CastSampleActivity : AppCompatActivity() {
 
             override fun onCastSessionAvailable() {
                 val item = MediaItem.Builder()
-                    .setUri(uri)
+                    .setUri(URI)
                     .setMimeType(MimeTypes.VIDEO_MP4)
                     .setTitle("Big Buck Bunny")
                     .build()
@@ -54,7 +51,7 @@ class CastSampleActivity : AppCompatActivity() {
         val userAgent = Util.getUserAgent(this, "SampleApp")
         val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
         val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(uri)
+            .createMediaSource(URI)
 
         player.prepare(mediaSource)
         player.playWhenReady = true
@@ -65,5 +62,11 @@ class CastSampleActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_cast, menu)
         CastButtonFactory.setUpMediaRouteButton(this, menu, R.id.item_cast)
         return true
+    }
+
+    companion object {
+
+        private val URI =
+            Uri.parse("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
     }
 }
