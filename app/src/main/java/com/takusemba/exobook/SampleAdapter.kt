@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.TextView
+import com.takusemba.exobook.extension.CastSampleActivity
 import com.takusemba.exobook.extension.ImaSampleActivity
 
 class SampleAdapter : BaseExpandableListAdapter() {
@@ -83,7 +84,7 @@ class SampleAdapter : BaseExpandableListAdapter() {
                 "Extension Library",
                 listOf(
                     Sample("Chapter 1 (IMA)", ImaSampleActivity::class.java),
-                    Sample("Chapter 2 (Cast)", ImaSampleActivity::class.java),
+                    Sample("Chapter 2 (Cast)", CastSampleActivity::class.java),
                     Sample("Chapter 3 (MediaSession)", ImaSampleActivity::class.java),
                     Sample("Chapter 4 (Network)", ImaSampleActivity::class.java),
                     Sample("Chapter 5 (Codec)", ImaSampleActivity::class.java),

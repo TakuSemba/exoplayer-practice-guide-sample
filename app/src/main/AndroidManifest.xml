@@ -23,7 +23,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".extension.ImaSampleActivity" />
+        <activity
+            android:name=".extension.ImaSampleActivity"
+            android:theme="@style/AppTheme.Player" />
+        <activity
+            android:name=".extension.CastSampleActivity"
+            android:theme="@style/AppTheme.Player.WithActionBar" />
 
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
