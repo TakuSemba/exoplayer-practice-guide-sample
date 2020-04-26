@@ -18,7 +18,7 @@ class SchedulerSampleActivity : AppCompatActivity() {
         button.text = getString(R.string.button_start_download)
         button.setOnClickListener {
             val downloadRequest = DownloadRequest(
-                CONTENT_ID,
+                URI.toString(),
                 DownloadRequest.TYPE_PROGRESSIVE,
                 URI,
                 emptyList(),
