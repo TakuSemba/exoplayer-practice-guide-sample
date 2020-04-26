@@ -24,7 +24,6 @@ class CastSampleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
-        val player = SimpleExoPlayer.Builder(this).build()
         val mediaItemConverter = DefaultMediaItemConverter()
         val castContext = CastContext.getSharedInstance(this)
         val castPlayer = CastPlayer(castContext)
@@ -44,6 +43,8 @@ class CastSampleActivity : AppCompatActivity() {
                 castPlayer.stop()
             }
         })
+
+        val player = SimpleExoPlayer.Builder(this).build()
 
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player

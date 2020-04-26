@@ -32,6 +32,7 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import com.takusemba.exobook.App.Companion.CHANNEL_ID
 import com.takusemba.exobook.R
 import java.util.*
 
@@ -40,7 +41,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
     private val notificationManager by lazy {
         PlayerNotificationManager.createWithNotificationChannel(
             this,
-            "channel-id",
+            CHANNEL_ID,
             R.string.channel_name,
             R.string.channel_description,
             NOTIFICATION_ID,

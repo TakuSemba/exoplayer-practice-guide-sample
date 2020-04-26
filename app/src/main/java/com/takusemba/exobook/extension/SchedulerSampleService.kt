@@ -13,6 +13,7 @@ import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.util.NotificationUtil
 import com.google.android.exoplayer2.util.Util
+import com.takusemba.exobook.App.Companion.CHANNEL_ID
 import java.io.File
 
 class SchedulerSampleService : DownloadService(NOTIFICATION_ID) {
@@ -42,7 +43,7 @@ class SchedulerSampleService : DownloadService(NOTIFICATION_ID) {
                     Download.STATE_COMPLETED -> {
                         DownloadNotificationHelper(
                             this@SchedulerSampleService,
-                            "channel-id"
+                            CHANNEL_ID
                         ).buildDownloadCompletedNotification(
                             android.R.drawable.stat_sys_download_done,
                             null,
@@ -52,7 +53,7 @@ class SchedulerSampleService : DownloadService(NOTIFICATION_ID) {
                     Download.STATE_FAILED -> {
                         DownloadNotificationHelper(
                             this@SchedulerSampleService,
-                            "channel-id"
+                            CHANNEL_ID
                         ).buildDownloadFailedNotification(
                             android.R.drawable.stat_sys_download_done,
                             null,
@@ -80,7 +81,7 @@ class SchedulerSampleService : DownloadService(NOTIFICATION_ID) {
     }
 
     override fun getForegroundNotification(downloads: MutableList<Download>): Notification {
-        return DownloadNotificationHelper(this, "channel-id")
+        return DownloadNotificationHelper(this, CHANNEL_ID)
             .buildProgressNotification(
                 android.R.drawable.stat_sys_download,
                 null,

@@ -9,10 +9,15 @@ class App : Application() {
         super.onCreate()
         NotificationUtil.createNotificationChannel(
             this,
-            "channel-id",
+            CHANNEL_ID,
             R.string.channel_name,
             R.string.channel_description,
             NotificationUtil.IMPORTANCE_DEFAULT
         )
+    }
+
+    companion object {
+
+        const val CHANNEL_ID = "channel-id"
     }
 }
