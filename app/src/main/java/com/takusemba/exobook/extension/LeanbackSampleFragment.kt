@@ -29,9 +29,11 @@ class LeanbackSampleFragment : VideoSupportFragment() {
         val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
             .createMediaSource(URI)
         player.prepare(mediaSource)
+        player.playWhenReady = true
     }
 
     companion object {
+
         private const val UPDATE_INTERVAL = 1000
 
         private val URI =

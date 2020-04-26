@@ -7,6 +7,7 @@
         android:id="@+id/playback_controls_fragment"
         android:name="com.takusemba.exobook.extension.LeanbackSampleFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:tag="@string/playback_tag" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
