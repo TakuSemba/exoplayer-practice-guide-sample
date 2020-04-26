@@ -6,6 +6,7 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.offline.DownloadRequest
 import com.google.android.exoplayer2.offline.DownloadService
+import com.takusemba.exobook.App
 import com.takusemba.exobook.R
 
 class SchedulerSampleActivity : AppCompatActivity() {
@@ -15,28 +16,33 @@ class SchedulerSampleActivity : AppCompatActivity() {
         setContentView(R.layout.activity_button)
 
         val button = findViewById<Button>(R.id.button)
-        button.text = getString(R.string.button_start_download)
+        button.text = getString(R.string.button_toggle_download)
         button.setOnClickListener {
-            val downloadRequest = DownloadRequest(
-                URI.toString(),
-                DownloadRequest.TYPE_PROGRESSIVE,
-                URI,
-                emptyList(),
-                null,
-                null
-            )
-//            DownloadService.sendRemoveDownload(
-//                this,
-//                SchedulerSampleService::class.java,
-//                CONTENT_ID,
-//                false
-//            )
-            DownloadService.sendAddDownload(
-                this,
-                SchedulerSampleService::class.java,
-                downloadRequest,
-                false
-            )
+            val downloadManager = (application as App).downloadManager
+            val download = downloadManager.downloadIndex.getDownload(CONTENT_ID)
+            if (download != null) {
+                DownloadService.sendRemoveDownload(
+                    this,
+                    SchedulerSampleService::class.java,
+                    CONTENT_ID,
+                    false
+                )
+            } else {
+                val downloadRequest = DownloadRequest(
+                    CONTENT_ID,
+                    DownloadRequest.TYPE_PROGRESSIVE,
+                    URI,
+                    emptyList(),
+                    null,
+                    null
+                )
+                DownloadService.sendAddDownload(
+                    this,
+                    SchedulerSampleService::class.java,
+                    downloadRequest,
+                    false
+                )
+            }
         }
     }
 

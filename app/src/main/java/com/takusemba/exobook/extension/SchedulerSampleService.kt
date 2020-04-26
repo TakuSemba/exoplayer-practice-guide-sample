@@ -27,12 +27,12 @@ class SchedulerSampleService : DownloadService(
             val notification: Notification = when (download.state) {
                 Download.STATE_COMPLETED -> {
                     (application as App).notificationHelper.buildDownloadCompletedNotification(
-                        R.drawable.ic_download_done, null, null
+                        android.R.drawable.stat_sys_download_done, null, null
                     )
                 }
                 Download.STATE_FAILED -> {
                     (application as App).notificationHelper.buildDownloadFailedNotification(
-                        R.drawable.ic_download_done, null, null
+                        android.R.drawable.stat_sys_download_done, null, null
                     )
                 }
                 else -> return
@@ -61,7 +61,7 @@ class SchedulerSampleService : DownloadService(
 
     override fun getForegroundNotification(downloads: MutableList<Download>): Notification {
         return (application as App).notificationHelper
-            .buildProgressNotification(R.drawable.ic_download, null, null, downloads)
+            .buildProgressNotification(android.R.drawable.stat_sys_download, null, null, downloads)
     }
 
     override fun getScheduler(): Scheduler? {
