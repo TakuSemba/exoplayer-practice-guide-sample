@@ -35,6 +35,9 @@
         <activity
             android:name=".extension.NetworkSampleActivity"
             android:theme="@style/AppTheme.Player" />
+        <activity
+            android:name=".extension.CodecSampleActivity"
+            android:theme="@style/AppTheme.Player" />
 
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"

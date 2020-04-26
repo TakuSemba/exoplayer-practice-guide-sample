@@ -1,2 +1,20 @@
-rootProject.name='exoplayer-practice-guide-sample'
+rootProject.name = 'exoplayer-practice-guide-sample'
 include ':app'
+
+// https://github.com/google/ExoPlayer#locally
+gradle.ext.useExoPlayerLocally = false
+if (gradle.ext.useExoPlayerLocally.toBoolean()) {
+
+    def EXO_PLAYER_LIBRARY_ROOT = new Properties().with {
+        it.load(file('local.properties').newDataInputStream())
+        it.getProperty("EXO_PLAYER_LIBRARY_ROOT")
+    }
+
+    if (!EXO_PLAYER_LIBRARY_ROOT) {
+        throw new IllegalStateException("'EXOPLAYER_LIBRARY_ROOT' key not found in local.properties.")
+    }
+
+    gradle.ext.exoplayerRoot = EXO_PLAYER_LIBRARY_ROOT
+    gradle.ext.exoplayerModulePrefix = 'exoplayer-'
+    apply from: new File(gradle.ext.exoplayerRoot, 'core_settings.gradle')
+}

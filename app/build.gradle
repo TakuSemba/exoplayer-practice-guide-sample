@@ -45,4 +45,10 @@ dependencies {
     implementation "com.google.android.exoplayer:extension-workmanager:2.11.4"
     implementation "com.google.android.exoplayer:extension-rtmp:2.11.4"
     implementation "com.google.android.exoplayer:extension-leanback:2.11.4"
+    if (gradle.ext.useExoPlayerLocally) {
+        implementation project(':exoplayer-extension-av1')
+        implementation project(':exoplayer-extension-vp9')
+        implementation project(':exoplayer-extension-flac')
+        implementation project(':exoplayer-extension-opus')
+    }
 }

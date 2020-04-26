@@ -16,6 +16,7 @@ import com.takusemba.exobook.R
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.chromium.net.CronetEngine
+import java.io.File
 import java.util.concurrent.Executors
 
 class NetworkSampleActivity : AppCompatActivity() {
@@ -63,6 +64,15 @@ class NetworkSampleActivity : AppCompatActivity() {
         val cronetWrapper = CronetEngineWrapper(cronetEngine)
         val executor = Executors.newSingleThreadExecutor()
         return CronetDataSourceFactory(cronetWrapper, executor, userAgent)
+    }
+
+    private fun CronetEngine.startNetLogForCronet() {
+        val outputFile = File.createTempFile("cronet", ".json", cacheDir)
+        startNetLogToFile(outputFile.toString(), true)
+    }
+
+    private fun CronetEngine.stopNetLogForCronet() {
+        stopNetLog()
     }
 
     companion object {
