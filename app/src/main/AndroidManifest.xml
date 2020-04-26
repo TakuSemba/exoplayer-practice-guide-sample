@@ -29,11 +29,19 @@
         <activity
             android:name=".extension.CastSampleActivity"
             android:theme="@style/AppTheme.Player.WithActionBar" />
+        <activity
+            android:name=".extension.MediaSessionSampleActivity"
+            android:theme="@style/AppTheme.Player" />
 
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="com.google.android.exoplayer2.ext.cast.DefaultCastOptionsProvider" />
 
+        <service android:name=".extension.MediaSessionSampleService">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

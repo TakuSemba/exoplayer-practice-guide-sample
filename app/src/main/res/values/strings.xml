@@ -2,4 +2,7 @@
     <string name="app_name">ExoPlayer Sample</string>
 
     <string name="menu_media_route_button">Media Route Button</string>
+
+    <string name="channel_name">Channel Name</string>
+    <string name="channel_description">Channel Description</string>
 </resources>
