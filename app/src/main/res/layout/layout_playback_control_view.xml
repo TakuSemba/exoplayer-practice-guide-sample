@@ -6,10 +6,10 @@
 
     <ImageView
         android:id="@id/exo_play"
-        style="@style/ExoMediaButton.Play"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="center"
+        android:src="@drawable/ic_play"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -17,10 +17,10 @@
 
     <ImageView
         android:id="@id/exo_pause"
-        style="@style/ExoMediaButton.Pause"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="center"
+        android:src="@drawable/ic_pause"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
