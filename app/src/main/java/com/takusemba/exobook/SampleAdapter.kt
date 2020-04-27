@@ -5,6 +5,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.TextView
+import com.takusemba.exobook.core.AesSampleActivity
+import com.takusemba.exobook.core.BasicSampleActivity
+import com.takusemba.exobook.core.CaptionSampleActivity
+import com.takusemba.exobook.core.CustomizeSampleActivity
+import com.takusemba.exobook.core.DebugSampleActivity
+import com.takusemba.exobook.core.DownloadSampleActivity
+import com.takusemba.exobook.core.DrmSampleActivity
+import com.takusemba.exobook.core.MetadataSampleActivity
+import com.takusemba.exobook.core.UiSampleActivity
 import com.takusemba.exobook.extension.CastSampleActivity
 import com.takusemba.exobook.extension.CodecSampleActivity
 import com.takusemba.exobook.extension.ImaSampleActivity
@@ -83,7 +92,15 @@ class SampleAdapter : BaseExpandableListAdapter() {
             SampleGroup(
                 "Core Library",
                 listOf(
-                    Sample("Chapter 1", ImaSampleActivity::class.java)
+                    Sample("Chapter 3 (Basic)", BasicSampleActivity::class.java),
+                    Sample("Chapter 4 (Caption)", CaptionSampleActivity::class.java),
+                    Sample("Chapter 5 (Metadata)", MetadataSampleActivity::class.java),
+                    Sample("Chapter 6 (UI)", UiSampleActivity::class.java),
+                    Sample("Chapter 7 (AES)", AesSampleActivity::class.java),
+                    Sample("Chapter 8 (DRM)", DrmSampleActivity::class.java),
+                    Sample("Chapter 9 (Customize)", CustomizeSampleActivity::class.java),
+                    Sample("Chapter 10 (Download)", DownloadSampleActivity::class.java),
+                    Sample("Chapter 11 (Debug)", DebugSampleActivity::class.java)
                 )
             ),
             SampleGroup(

@@ -35,6 +35,35 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".core.BasicSampleActivity"
+            android:theme="@style/AppTheme.Player" />
+        <activity
+            android:name=".core.CaptionSampleActivity"
+            android:theme="@style/AppTheme.Player" />
+        <activity
+            android:name=".core.MetadataSampleActivity"
+            android:theme="@style/AppTheme.Player" />
+        <activity
+            android:name=".core.UiSampleActivity"
+            android:theme="@style/AppTheme.Player" />
+        <activity
+            android:name=".core.AesSampleActivity"
+            android:theme="@style/AppTheme.Player" />
+        <activity
+            android:name=".core.DrmSampleActivity"
+            android:theme="@style/AppTheme.Player" />
+        <activity
+            android:name=".core.CustomizeSampleActivity"
+            android:theme="@style/AppTheme.Player" />
+        <activity
+            android:name=".core.DownloadSampleActivity"
+            android:theme="@style/AppTheme.Player" />
+        <activity
+            android:name=".core.DebugSampleActivity"
+            android:theme="@style/AppTheme.Player" />
+
         <activity
             android:name=".extension.ImaSampleActivity"
             android:theme="@style/AppTheme.Player" />
