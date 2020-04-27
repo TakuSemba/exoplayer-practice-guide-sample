@@ -25,6 +25,7 @@ import androidx.media.MediaBrowserServiceCompat
 import com.google.android.exoplayer2.ControlDispatcher
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
@@ -197,6 +198,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
             val mediaSource = mediaSourceFactory.createMediaSource(Uri.parse(song.source))
             concatenatingMediaSource.addMediaSource(mediaSource)
         }
+        player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.prepare(concatenatingMediaSource)
         player.playWhenReady = true
         player.addListener(object : Player.EventListener {

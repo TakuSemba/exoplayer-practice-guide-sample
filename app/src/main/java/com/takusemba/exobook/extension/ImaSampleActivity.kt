@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.ima.ImaAdsLoader
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.ads.AdsMediaSource
@@ -42,6 +43,7 @@ class ImaSampleActivity : AppCompatActivity() {
             adsLoader,
             playerView
         )
+        player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.prepare(adsMediaSource)
         player.playWhenReady = true
     }
