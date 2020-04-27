@@ -1,0 +1,26 @@
+<tt xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns="http://www.w3.org/ns/ttml"
+    ttp:frameRate="24" ttp:timeBase="media" xml:lang="en">
+    <head>
+        <metadata>
+            <ttm:title>Sample TTML</ttm:title>
+        </metadata>
+        <styling>
+            <style tts:fontFamily="Arial" tts:fontSize="100%" tts:textAlign="center" xml:id="s1" />
+        </styling>
+        <layout>
+            <region tts:displayAlign="after" tts:extent="80% 40%" tts:origin="10% 50%"
+                xml:id="bottom" />
+            <region tts:displayAlign="before" tts:extent="80% 40%" tts:origin="10% 10%"
+                xml:id="top" />
+        </layout>
+    </head>
+    <body style="s1" region="bottom">
+        <div>
+            <p begin="00:00:01.375" end="00:00:05.750" xml:id="id1">Hello TTML</p>
+            <p begin="00:00:05.916" end="00:00:10.216" xml:id="id2">Hello</p>
+            <p begin="00:00:10.418" end="00:00:15.083" xml:id="id3">World</p>
+            <p begin="00:00:15.391" end="00:00:20.558" region="top" xml:id="id4">Hi!</p>
+        </div>
+    </body>
+</tt>
