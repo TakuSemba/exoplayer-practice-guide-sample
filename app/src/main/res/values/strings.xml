@@ -9,4 +9,6 @@
 
     <string name="button_start_background_playback">Start Background Playback</string>
     <string name="button_toggle_download">Toggle Download</string>
+
+    <string name="message_uri_is_invalid">uri is invalid</string>
 </resources>

@@ -2,6 +2,7 @@ package com.takusemba.exobook.extension
 
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
@@ -28,6 +29,10 @@ class RtmpSampleActivity : AppCompatActivity() {
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.prepare(mediaSource)
         player.playWhenReady = true
+
+        if (URI == Uri.EMPTY) {
+            Toast.makeText(this, R.string.message_uri_is_invalid, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onStart() {
@@ -47,6 +52,6 @@ class RtmpSampleActivity : AppCompatActivity() {
 
     companion object {
 
-        private val URI = Uri.parse("rtmp://ip-address:1935/live/ext-test")
+        private val URI = Uri.EMPTY // set your RTMP path
     }
 }
