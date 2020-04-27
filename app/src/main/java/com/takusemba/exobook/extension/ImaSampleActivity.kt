@@ -16,6 +16,14 @@ import com.takusemba.exobook.R
 class ImaSampleActivity : AppCompatActivity() {
 
     private val player by lazy { SimpleExoPlayer.Builder(this).build() }
+    private val adsLoader by lazy {
+        ImaAdsLoader.Builder(this)
+            .setMaxMediaBitrate(1_000_000)
+            .setMediaLoadTimeoutMs(5000)
+            .setMediaLoadTimeoutMs(5000)
+            .setAdEventListener { adEvent -> /* do something */ }
+            .buildForAdTag(AD_URI)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,14 +37,7 @@ class ImaSampleActivity : AppCompatActivity() {
         val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
             .createMediaSource(URI)
 
-        val adsLoader = ImaAdsLoader.Builder(this)
-            .setMaxMediaBitrate(1_000_000)
-            .setMediaLoadTimeoutMs(5000)
-            .setMediaLoadTimeoutMs(5000)
-            .setAdEventListener { adEvent -> /* do something */ }
-            .buildForAdTag(AD_URI)
         adsLoader.setPlayer(player)
-
         val adsMediaSource = AdsMediaSource(
             mediaSource,
             dataSourceFactory,
@@ -61,6 +62,7 @@ class ImaSampleActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         player.release()
+        adsLoader.release()
     }
 
     companion object {
