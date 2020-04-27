@@ -1,6 +1,7 @@
 package com.takusemba.exobook
 
 import android.app.Application
+import android.content.Context
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.offline.DownloadManager
 import com.google.android.exoplayer2.ui.DownloadNotificationHelper
@@ -28,6 +29,8 @@ class App : Application() {
         DownloadManager(this, databaseProvider, downloadCache, buildCacheDataSourceFactory())
     }
     val notificationHelper by lazy { DownloadNotificationHelper(this, CHANNEL_ID) }
+
+    val prefs by lazy { getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE) }
 
     override fun onCreate() {
         super.onCreate()
@@ -57,5 +60,6 @@ class App : Application() {
 
         const val CHANNEL_ID = "channel-id"
         private const val DOWNLOAD_CONTENT_DIRECTORY = "downloads"
+        private const val PREFERENCES_NAME = "SampleApp"
     }
 }

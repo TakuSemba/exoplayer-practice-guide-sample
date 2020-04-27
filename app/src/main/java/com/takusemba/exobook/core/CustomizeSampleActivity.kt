@@ -10,17 +10,18 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.mediacodec.MediaCodecInfo
 import com.google.android.exoplayer2.mediacodec.MediaCodecSelector
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.upstream.BandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultLoadErrorHandlingPolicy
 import com.google.android.exoplayer2.upstream.HttpDataSource
 import com.google.android.exoplayer2.upstream.LoadErrorHandlingPolicy
 import com.google.android.exoplayer2.util.Util
+import com.takusemba.exobook.App
 import com.takusemba.exobook.R
 import java.io.IOException
 import java.util.*
@@ -59,14 +60,10 @@ class CustomizeSampleActivity : AppCompatActivity() {
             )
             .createDefaultLoadControl()
 
-        val bandwidthMeter = DefaultBandwidthMeter.Builder(this)
-            .setSlidingWindowMaxWeight(DefaultBandwidthMeter.DEFAULT_SLIDING_WINDOW_MAX_WEIGHT)
-            .build()
-
         SimpleExoPlayer.Builder(this, renderersFactory)
             .setTrackSelector(trackSelector)
             .setLoadControl(loadControl)
-            .setBandwidthMeter(bandwidthMeter)
+            .setBandwidthMeter(getDefaultBandwidthMeter())
             .build()
     }
 
@@ -101,6 +98,38 @@ class CustomizeSampleActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         player.release()
+    }
+
+    private fun getDefaultBandwidthMeter(): BandwidthMeter {
+        return when (BANDWIDTH_SCOPE) {
+            BandwidthScope.SESSION -> DefaultBandwidthMeter.Builder(this)
+                .setInitialBitrateEstimate(DEFAULT_INITIAL_BANDWIDTH)
+                .setResetOnNetworkTypeChange(true)
+                .build()
+            BandwidthScope.APPLICATION -> {
+                return singletonBandwidthMeter ?: DefaultBandwidthMeter.Builder(this)
+                    .setInitialBitrateEstimate(DEFAULT_INITIAL_BANDWIDTH)
+                    .setResetOnNetworkTypeChange(true)
+                    .build()
+                    .also { bandwidthMeter ->
+                        singletonBandwidthMeter = bandwidthMeter
+                    }
+            }
+            BandwidthScope.LIFETIME -> {
+                return singletonBandwidthMeter ?: DefaultBandwidthMeter.Builder(this)
+                    .setInitialBitrateEstimate(
+                        (application as App).prefs.getLong(
+                            KEY_LAST_ESTIMATED_BANDWIDTH,
+                            DEFAULT_INITIAL_BANDWIDTH
+                        )
+                    )
+                    .setResetOnNetworkTypeChange(true)
+                    .build()
+                    .also { bandwidthMeter ->
+                        singletonBandwidthMeter = bandwidthMeter
+                    }
+            }
+        }
     }
 
     private class MyLoadErrorHandlingPolicy :
@@ -169,7 +198,16 @@ class CustomizeSampleActivity : AppCompatActivity() {
 
     companion object {
 
+        private var singletonBandwidthMeter: BandwidthMeter? = null
+
         private val URI =
             Uri.parse("https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8")
+
+        private val BANDWIDTH_SCOPE = BandwidthScope.SESSION
+
+        enum class BandwidthScope { SESSION, APPLICATION, LIFETIME }
+
+        private const val DEFAULT_INITIAL_BANDWIDTH = 500_000L
+        private const val KEY_LAST_ESTIMATED_BANDWIDTH = "key_last_estimated_bandwidth"
     }
 }
