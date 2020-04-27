@@ -7,6 +7,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.ima.ImaAdsLoader
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.source.ads.AdsLoader
 import com.google.android.exoplayer2.source.ads.AdsMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
@@ -15,19 +16,32 @@ import com.takusemba.exobook.R
 
 class ImaSampleActivity : AppCompatActivity() {
 
-    private val player by lazy { SimpleExoPlayer.Builder(this).build() }
-    private val adsLoader by lazy {
-        ImaAdsLoader.Builder(this)
+    private var player: SimpleExoPlayer? = null
+    private var adsLoader: AdsLoader? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_player)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        initializePlayer()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        releasePlayer()
+    }
+
+    private fun initializePlayer() {
+        val player = SimpleExoPlayer.Builder(this).build()
+        val adsLoader = ImaAdsLoader.Builder(this)
             .setMaxMediaBitrate(1_000_000)
             .setMediaLoadTimeoutMs(5000)
             .setMediaLoadTimeoutMs(5000)
             .setAdEventListener { adEvent -> /* do something */ }
             .buildForAdTag(AD_URI)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
 
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
@@ -47,22 +61,17 @@ class ImaSampleActivity : AppCompatActivity() {
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.prepare(adsMediaSource)
         player.playWhenReady = true
+
+        this.player = player
     }
 
-    override fun onStart() {
-        super.onStart()
-        player.playWhenReady = true
-    }
-
-    override fun onStop() {
-        super.onStop()
-        player.playWhenReady = false
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        player.release()
-        adsLoader.release()
+    private fun releasePlayer() {
+        player?.stop()
+        player?.release()
+        adsLoader?.stop()
+        adsLoader?.release()
+        player = null
+        adsLoader = null
     }
 
     companion object {

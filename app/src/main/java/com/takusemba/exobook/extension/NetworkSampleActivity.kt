@@ -22,20 +22,33 @@ import java.util.concurrent.Executors
 
 class NetworkSampleActivity : AppCompatActivity() {
 
-    private val userAgent by lazy { Util.getUserAgent(this, "SampleApp") }
-    private val player by lazy { SimpleExoPlayer.Builder(this).build() }
+    private var player: SimpleExoPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
+    }
 
+    override fun onStart() {
+        super.onStart()
+        initializePlayer()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        releasePlayer()
+    }
+
+    private fun initializePlayer() {
+        val player = SimpleExoPlayer.Builder(this).build()
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
 
+        val userAgent = Util.getUserAgent(this, "SampleApp")
         val dataSourceFactory = when (TYPE) {
-            DataSourceFactoryType.OK_HTTP -> getOkHttpDataSourceFactory()
-            DataSourceFactoryType.CRONET -> getCronetDataSourceFactory()
-            DataSourceFactoryType.DEFAULT -> getDefaultHttpDataSourceFactory()
+            DataSourceFactoryType.OK_HTTP -> getOkHttpDataSourceFactory(userAgent)
+            DataSourceFactoryType.CRONET -> getCronetDataSourceFactory(userAgent)
+            DataSourceFactoryType.DEFAULT -> getDefaultHttpDataSourceFactory(userAgent)
         }
         val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
             .createMediaSource(URI)
@@ -43,13 +56,21 @@ class NetworkSampleActivity : AppCompatActivity() {
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.prepare(mediaSource)
         player.playWhenReady = true
+
+        this.player = player
     }
 
-    private fun getDefaultHttpDataSourceFactory(): DataSource.Factory {
+    private fun releasePlayer() {
+        player?.stop()
+        player?.release()
+        player = null
+    }
+
+    private fun getDefaultHttpDataSourceFactory(userAgent: String): DataSource.Factory {
         return DefaultHttpDataSourceFactory(userAgent)
     }
 
-    private fun getOkHttpDataSourceFactory(): DataSource.Factory {
+    private fun getOkHttpDataSourceFactory(userAgent: String): DataSource.Factory {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS)
         val okHttpClient = OkHttpClient.Builder()
@@ -58,7 +79,7 @@ class NetworkSampleActivity : AppCompatActivity() {
         return OkHttpDataSourceFactory(okHttpClient, userAgent)
     }
 
-    private fun getCronetDataSourceFactory(): DataSource.Factory {
+    private fun getCronetDataSourceFactory(userAgent: String): DataSource.Factory {
         val cronetEngine = CronetEngine.Builder(this)
             .enableQuic(true)
             .build()
@@ -74,21 +95,6 @@ class NetworkSampleActivity : AppCompatActivity() {
 
     private fun CronetEngine.stopNetLogForCronet() {
         stopNetLog()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        player.playWhenReady = true
-    }
-
-    override fun onStop() {
-        super.onStop()
-        player.playWhenReady = false
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        player.release()
     }
 
     companion object {

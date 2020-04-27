@@ -21,7 +21,7 @@ import com.takusemba.exobook.R
 
 class CastSampleActivity : AppCompatActivity() {
 
-    private val player by lazy { SimpleExoPlayer.Builder(this).build() }
+    private var player: SimpleExoPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +46,27 @@ class CastSampleActivity : AppCompatActivity() {
                 castPlayer.stop()
             }
         })
+    }
+
+    override fun onStart() {
+        super.onStart()
+        initializePlayer()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        releasePlayer()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.menu_cast, menu)
+        CastButtonFactory.setUpMediaRouteButton(this, menu, R.id.item_cast)
+        return true
+    }
+
+    private fun initializePlayer() {
+        val player = SimpleExoPlayer.Builder(this).build()
 
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
@@ -58,28 +79,14 @@ class CastSampleActivity : AppCompatActivity() {
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.prepare(mediaSource)
         player.playWhenReady = true
+
+        this.player = player
     }
 
-    override fun onStart() {
-        super.onStart()
-        player.playWhenReady = true
-    }
-
-    override fun onStop() {
-        super.onStop()
-        player.playWhenReady = false
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        player.release()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        super.onCreateOptionsMenu(menu)
-        menuInflater.inflate(R.menu.menu_cast, menu)
-        CastButtonFactory.setUpMediaRouteButton(this, menu, R.id.item_cast)
-        return true
+    private fun releasePlayer() {
+        player?.stop()
+        player?.release()
+        player = null
     }
 
     companion object {

@@ -28,7 +28,24 @@ import java.util.*
 
 class CustomizeSampleActivity : AppCompatActivity() {
 
-    private val player by lazy {
+    private var player: SimpleExoPlayer? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_player)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        initializePlayer()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        releasePlayer()
+    }
+
+    private fun initializePlayer() {
 
         val parameters = DefaultTrackSelector.ParametersBuilder(this)
             .setMaxAudioChannelCount(2)
@@ -60,16 +77,11 @@ class CustomizeSampleActivity : AppCompatActivity() {
             )
             .createDefaultLoadControl()
 
-        SimpleExoPlayer.Builder(this, renderersFactory)
+        val player = SimpleExoPlayer.Builder(this, renderersFactory)
             .setTrackSelector(trackSelector)
             .setLoadControl(loadControl)
             .setBandwidthMeter(getDefaultBandwidthMeter())
             .build()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
 
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
@@ -83,21 +95,14 @@ class CustomizeSampleActivity : AppCompatActivity() {
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.prepare(mediaSource)
         player.playWhenReady = true
+
+        this.player = player
     }
 
-    override fun onStart() {
-        super.onStart()
-        player.playWhenReady = true
-    }
-
-    override fun onStop() {
-        super.onStop()
-        player.playWhenReady = false
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        player.release()
+    private fun releasePlayer() {
+        player?.stop()
+        player?.release()
+        player = null
     }
 
     private fun getDefaultBandwidthMeter(): BandwidthMeter {

@@ -1,7 +1,6 @@
 package com.takusemba.exobook.extension
 
 import android.net.Uri
-import android.os.Bundle
 import androidx.leanback.app.VideoSupportFragment
 import androidx.leanback.app.VideoSupportFragmentGlueHost
 import androidx.leanback.media.PlaybackTransportControlGlue
@@ -14,14 +13,22 @@ import com.google.android.exoplayer2.util.Util
 
 class LeanbackSampleFragment : VideoSupportFragment() {
 
-    private val player by lazy { SimpleExoPlayer.Builder(requireContext()).build() }
+    private var player: SimpleExoPlayer? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onStart() {
+        super.onStart()
+        initializePlayer()
+    }
 
+    override fun onStop() {
+        super.onStop()
+        releasePlayer()
+    }
+
+    private fun initializePlayer() {
+        val player = SimpleExoPlayer.Builder(requireContext()).build()
         val adapter = LeanbackPlayerAdapter(requireContext(), player, UPDATE_INTERVAL)
         val playerGlue = PlaybackTransportControlGlue(activity, adapter)
-
         playerGlue.host = VideoSupportFragmentGlueHost(this)
         playerGlue.subtitle = "Leanback Subtitle"
         playerGlue.title = "Leanback Title"
@@ -33,21 +40,14 @@ class LeanbackSampleFragment : VideoSupportFragment() {
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.prepare(mediaSource)
         player.playWhenReady = true
+
+        this.player = player
     }
 
-    override fun onStart() {
-        super.onStart()
-        player.playWhenReady = true
-    }
-
-    override fun onStop() {
-        super.onStop()
-        player.playWhenReady = false
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        player.release()
+    private fun releasePlayer() {
+        player?.stop()
+        player?.release()
+        player = null
     }
 
     companion object {

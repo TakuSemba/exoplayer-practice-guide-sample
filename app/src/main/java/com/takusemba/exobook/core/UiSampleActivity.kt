@@ -13,12 +13,25 @@ import com.takusemba.exobook.R
 
 class UiSampleActivity : AppCompatActivity() {
 
-    private val player by lazy { SimpleExoPlayer.Builder(this).build() }
+    private var player: SimpleExoPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ui)
+    }
 
+    override fun onStart() {
+        super.onStart()
+        initializePlayer()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        releasePlayer()
+    }
+
+    private fun initializePlayer() {
+        val player = SimpleExoPlayer.Builder(this).build()
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
 
@@ -30,21 +43,14 @@ class UiSampleActivity : AppCompatActivity() {
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.prepare(mediaSource)
         player.playWhenReady = true
+
+        this.player = player
     }
 
-    override fun onStart() {
-        super.onStart()
-        player.playWhenReady = true
-    }
-
-    override fun onStop() {
-        super.onStop()
-        player.playWhenReady = false
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        player.release()
+    private fun releasePlayer() {
+        player?.stop()
+        player?.release()
+        player = null
     }
 
     companion object {

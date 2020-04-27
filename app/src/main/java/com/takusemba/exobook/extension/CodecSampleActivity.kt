@@ -15,14 +15,27 @@ import com.takusemba.exobook.R
 
 class CodecSampleActivity : AppCompatActivity() {
 
-    private val renderersFactory by lazy {
-        DefaultRenderersFactory(this).setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER)
-    }
-    private val player by lazy { SimpleExoPlayer.Builder(this, renderersFactory).build() }
+    private var player: SimpleExoPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        initializePlayer()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        releasePlayer()
+    }
+
+    private fun initializePlayer() {
+        val renderersFactory = DefaultRenderersFactory(this)
+            .setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER)
+        val player = SimpleExoPlayer.Builder(this, renderersFactory).build()
 
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
@@ -35,21 +48,14 @@ class CodecSampleActivity : AppCompatActivity() {
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.prepare(mediaSource)
         player.playWhenReady = true
+
+        this.player = player
     }
 
-    override fun onStart() {
-        super.onStart()
-        player.playWhenReady = true
-    }
-
-    override fun onStop() {
-        super.onStop()
-        player.playWhenReady = false
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        player.release()
+    private fun releasePlayer() {
+        player?.stop()
+        player?.release()
+        player = null
     }
 
     companion object {
