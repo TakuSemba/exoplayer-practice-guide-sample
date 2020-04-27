@@ -35,7 +35,7 @@ class NetworkSampleActivity : AppCompatActivity() {
         val dataSourceFactory = when (TYPE) {
             DataSourceFactoryType.OK_HTTP -> getOkHttpDataSourceFactory()
             DataSourceFactoryType.CRONET -> getCronetDataSourceFactory()
-            DataSourceFactoryType.DEFAULT -> getDefaultDataSourceFactory()
+            DataSourceFactoryType.DEFAULT -> getDefaultHttpDataSourceFactory()
         }
         val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
             .createMediaSource(URI)
@@ -45,7 +45,7 @@ class NetworkSampleActivity : AppCompatActivity() {
         player.playWhenReady = true
     }
 
-    private fun getDefaultDataSourceFactory(): DataSource.Factory {
+    private fun getDefaultHttpDataSourceFactory(): DataSource.Factory {
         return DefaultHttpDataSourceFactory(userAgent)
     }
 

@@ -9,7 +9,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.R
 
@@ -28,7 +28,7 @@ class CodecSampleActivity : AppCompatActivity() {
         playerView.player = player
 
         val userAgent = Util.getUserAgent(this, "SampleApp")
-        val dataSourceFactory = DefaultHttpDataSourceFactory(userAgent)
+        val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
         val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
             .createMediaSource(URI)
 

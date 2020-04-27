@@ -18,7 +18,7 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.google.android.exoplayer2.video.VideoListener
 import com.takusemba.exobook.R
@@ -35,7 +35,7 @@ class BasicSampleActivity : AppCompatActivity() {
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
 
-        val dataSourceFactory = DefaultHttpDataSourceFactory(userAgent)
+        val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
         val childMediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
             .createMediaSource(URI)
 
