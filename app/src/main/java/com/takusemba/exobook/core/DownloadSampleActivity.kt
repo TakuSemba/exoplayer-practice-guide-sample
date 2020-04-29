@@ -30,9 +30,9 @@ class DownloadSampleActivity : AppCompatActivity() {
             val downloadManager = (application as App).downloadManager
             val download = downloadManager.downloadIndex.getDownload(CONTENT_ID)
             if (download != null) {
-                stopDownload()
+                removeDownload()
             } else {
-                startDownload()
+                addDownload()
             }
         }
     }
@@ -42,7 +42,7 @@ class DownloadSampleActivity : AppCompatActivity() {
         downloadHelper?.release()
     }
 
-    private fun startDownload() {
+    private fun addDownload() {
         if (this.downloadHelper != null) {
             downloadHelper?.release()
         }
@@ -95,7 +95,7 @@ class DownloadSampleActivity : AppCompatActivity() {
         this.downloadHelper = downloadHelper
     }
 
-    private fun stopDownload() {
+    private fun removeDownload() {
         DownloadService.sendRemoveDownload(
             this,
             DownloadSampleService::class.java,
