@@ -91,9 +91,8 @@ class DownloadSampleActivity : AppCompatActivity() {
         val toggleButton = findViewById<Button>(R.id.toggle_download_button)
         toggleButton.setOnClickListener {
             val downloadManager = (application as App).downloadManager
-            val download =
-                downloadManager.downloadIndex.getDownload(CONTENT_ID)
-            if (download != null) {
+            val download = downloadManager.downloadIndex.getDownload(CONTENT_ID)
+            if (download?.state == Download.STATE_COMPLETED) {
                 removeDownload()
             } else {
                 addDownload()
@@ -166,7 +165,7 @@ class DownloadSampleActivity : AppCompatActivity() {
                     }
                 }
                 // download content
-                val downloadRequest = helper.getDownloadRequest(null)
+                val downloadRequest = helper.getDownloadRequest(CONTENT_ID, null)
                 DownloadService.sendAddDownload(
                     this@DownloadSampleActivity,
                     DownloadSampleService::class.java,
@@ -180,6 +179,15 @@ class DownloadSampleActivity : AppCompatActivity() {
             }
         })
         this.downloadHelper = downloadHelper
+    }
+
+    private fun removeDownload() {
+        DownloadService.sendRemoveDownload(
+            this,
+            DownloadSampleService::class.java,
+            CONTENT_ID,
+            false
+        )
     }
 
     private fun initializePlayer() {
@@ -202,15 +210,6 @@ class DownloadSampleActivity : AppCompatActivity() {
         player?.stop()
         player?.release()
         player = null
-    }
-
-    private fun removeDownload() {
-        DownloadService.sendRemoveDownload(
-            this,
-            DownloadSampleService::class.java,
-            CONTENT_ID,
-            false
-        )
     }
 
     companion object {
