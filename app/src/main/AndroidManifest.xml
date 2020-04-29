@@ -93,6 +93,12 @@
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="com.google.android.exoplayer2.ext.cast.DefaultCastOptionsProvider" />
 
+        <service android:name=".core.DownloadSampleService">
+            <intent-filter>
+                <action android:name="com.google.android.exoplayer.downloadService.action.RESTART" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
         <service android:name=".extension.MediaSessionSampleService">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
