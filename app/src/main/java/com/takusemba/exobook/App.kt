@@ -3,6 +3,7 @@ package com.takusemba.exobook
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import com.facebook.stetho.Stetho
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.offline.DownloadManager
 import com.google.android.exoplayer2.ui.DownloadNotificationHelper
@@ -37,6 +38,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Stetho.initializeWithDefaults(this)
         NotificationUtil.createNotificationChannel(
             this,
             CHANNEL_ID,

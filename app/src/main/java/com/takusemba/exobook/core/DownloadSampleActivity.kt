@@ -11,11 +11,16 @@ import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
+import com.google.android.exoplayer2.drm.DefaultDrmSessionManager
+import com.google.android.exoplayer2.drm.FrameworkMediaDrm
+import com.google.android.exoplayer2.drm.HttpMediaDrmCallback
+import com.google.android.exoplayer2.drm.OfflineLicenseHelper
 import com.google.android.exoplayer2.offline.Download
 import com.google.android.exoplayer2.offline.DownloadHelper
 import com.google.android.exoplayer2.offline.DownloadManager
 import com.google.android.exoplayer2.offline.DownloadService
 import com.google.android.exoplayer2.source.dash.DashMediaSource
+import com.google.android.exoplayer2.source.dash.DashUtil
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
@@ -23,6 +28,8 @@ import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.App
 import com.takusemba.exobook.R
 import java.io.IOException
+import java.util.concurrent.CountDownLatch
+import kotlin.concurrent.thread
 
 class DownloadSampleActivity : AppCompatActivity() {
 
@@ -133,10 +140,11 @@ class DownloadSampleActivity : AppCompatActivity() {
             downloadHelper?.release()
         }
         val userAgent = Util.getUserAgent(this, "SampleApp")
+        val httpDataSourceFactory = DefaultHttpDataSourceFactory(userAgent)
         val downloadHelper = DownloadHelper.forDash(
             this,
             URI,
-            DefaultHttpDataSourceFactory(userAgent),
+            httpDataSourceFactory,
             DefaultRenderersFactory(this)
         )
         downloadHelper.prepare(object : DownloadHelper.Callback {
@@ -164,8 +172,37 @@ class DownloadSampleActivity : AppCompatActivity() {
                         }
                     }
                 }
+
+                // download DRM license
+                var offlineLicense: ByteArray? = null
+                val countDownLatch = CountDownLatch(1)
+                thread {
+                    val dashManifest = DashUtil.loadManifest(
+                        httpDataSourceFactory.createDataSource(),
+                        URI
+                    )
+                    val drmInitData = DashUtil.loadDrmInitData(
+                        httpDataSourceFactory.createDataSource(),
+                        dashManifest.getPeriod(0)
+                    )
+                    val offlineLicenseHelper = OfflineLicenseHelper.newWidevineInstance(
+                        LICENSE_URL,
+                        httpDataSourceFactory
+                    )
+                    offlineLicense = if (drmInitData != null) {
+                        offlineLicenseHelper.downloadLicense(drmInitData)
+                    } else {
+                        null
+                    }
+                    if (offlineLicense != null) {
+                        Log.d(TAG, "offlineLicense: ${String(checkNotNull(offlineLicense))}")
+                    }
+                    countDownLatch.countDown()
+                }
+                countDownLatch.await()
+
                 // download content
-                val downloadRequest = helper.getDownloadRequest(CONTENT_ID, null)
+                val downloadRequest = helper.getDownloadRequest(CONTENT_ID, offlineLicense)
                 DownloadService.sendAddDownload(
                     this@DownloadSampleActivity,
                     DownloadSampleService::class.java,
@@ -195,8 +232,30 @@ class DownloadSampleActivity : AppCompatActivity() {
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
 
+        val userAgent = Util.getUserAgent(this, "SampleApp")
         val dataSourceFactory = (application as App).buildCacheDataSourceFactory()
+        val drmCallback = HttpMediaDrmCallback(
+            "https://proxy.uat.widevine.com/proxy?provider=widevine_test",
+            DefaultHttpDataSourceFactory(userAgent)
+        )
+        val drmSessionManager = DefaultDrmSessionManager.Builder()
+            .setUuidAndExoMediaDrmProvider(
+                C.WIDEVINE_UUID,
+                FrameworkMediaDrm.DEFAULT_PROVIDER
+            )
+            .build(drmCallback)
+
+        val downloadManager = (application as App).downloadManager
+        val download = downloadManager.downloadIndex.getDownload(CONTENT_ID)
+        val offlineLicense = download?.request?.data
+        if (offlineLicense != null) {
+            drmSessionManager.setMode(
+                DefaultDrmSessionManager.MODE_PLAYBACK,
+                offlineLicense
+            )
+        }
         val mediaSource = DashMediaSource.Factory(dataSourceFactory)
+            .setDrmSessionManager(drmSessionManager)
             .createMediaSource(URI)
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
@@ -218,6 +277,8 @@ class DownloadSampleActivity : AppCompatActivity() {
         private const val CONTENT_ID = "tears"
 
         private val URI =
-            Uri.parse("https://storage.googleapis.com/wvmedia/clear/h264/tears/tears.mpd")
+            Uri.parse("https://storage.googleapis.com/wvmedia/cenc/h264/tears/tears_sd.mpd")
+        private const val LICENSE_URL =
+            "https://proxy.uat.widevine.com/proxy?provider=widevine_test"
     }
 }

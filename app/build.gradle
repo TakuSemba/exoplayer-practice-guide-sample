@@ -52,4 +52,6 @@ dependencies {
         implementation project(':exoplayer-extension-flac')
         implementation project(':exoplayer-extension-opus')
     }
+
+    implementation 'com.facebook.stetho:stetho:1.5.1'
 }
