@@ -34,6 +34,9 @@ class SchedulerSampleActivity : AppCompatActivity() {
                 Download.STATE_COMPLETED -> {
                     getString(R.string.message_downloaded_completed)
                 }
+                Download.STATE_REMOVING -> {
+                    getString(R.string.message_downloaded_removing)
+                }
                 Download.STATE_FAILED -> {
                     getString(R.string.message_downloaded_failed)
                 }
@@ -65,7 +68,7 @@ class SchedulerSampleActivity : AppCompatActivity() {
         playButton.setOnClickListener {
             val downloadManager = (application as App).downloadManager
             val download = downloadManager.downloadIndex.getDownload(CONTENT_ID)
-            if (download != null) {
+            if (download?.state == Download.STATE_COMPLETED) {
                 initializePlayer()
             } else {
                 Toast.makeText(

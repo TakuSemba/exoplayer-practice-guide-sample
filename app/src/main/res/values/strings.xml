@@ -16,6 +16,7 @@
     <string name="message_downloaded_content_not_found">download content not found</string>
     <string name="message_downloading">downloading…</string>
     <string name="message_downloaded_completed">download completed</string>
+    <string name="message_downloaded_removing">removing…</string>
     <string name="message_downloaded_failed">download failed</string>
     <string name="message_downloaded_stopped">download stopped</string>
 </resources>
