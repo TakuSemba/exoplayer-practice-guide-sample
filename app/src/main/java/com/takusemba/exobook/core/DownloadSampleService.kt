@@ -69,7 +69,7 @@ class DownloadSampleService : DownloadService(
 
     companion object {
 
-        private const val NOTIFICATION_ID = 1
+        private const val NOTIFICATION_ID = 100
         private const val JOB_ID = 1
     }
 }

@@ -70,7 +70,7 @@ class SchedulerSampleService : DownloadService(
 
     companion object {
 
-        private const val NOTIFICATION_ID = 1
+        private const val NOTIFICATION_ID = 200
         private const val WORK_NAME = "DownloadScheduler"
     }
 }

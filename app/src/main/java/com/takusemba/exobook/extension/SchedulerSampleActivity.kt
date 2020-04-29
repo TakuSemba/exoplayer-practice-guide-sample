@@ -23,6 +23,29 @@ class SchedulerSampleActivity : AppCompatActivity() {
 
     private val downloadStateListener = object : DownloadManager.Listener {
 
+        override fun onInitialized(downloadManager: DownloadManager) {
+            val download = downloadManager.downloadIndex.getDownload(CONTENT_ID) ?: return
+            val text = when (download.state) {
+                Download.STATE_DOWNLOADING -> {
+                    getString(R.string.message_downloading)
+                }
+                Download.STATE_COMPLETED -> {
+                    getString(R.string.message_downloaded_completed)
+                }
+                Download.STATE_REMOVING -> {
+                    getString(R.string.message_downloaded_removing)
+                }
+                Download.STATE_FAILED -> {
+                    getString(R.string.message_downloaded_failed)
+                }
+                Download.STATE_STOPPED -> {
+                    getString(R.string.message_downloaded_stopped)
+                }
+                else -> ""
+            }
+            findViewById<TextView>(R.id.download_text_view).text = text
+        }
+
         override fun onDownloadChanged(
             downloadManager: DownloadManager,
             download: Download
@@ -43,9 +66,13 @@ class SchedulerSampleActivity : AppCompatActivity() {
                 Download.STATE_STOPPED -> {
                     getString(R.string.message_downloaded_stopped)
                 }
-                else -> return
+                else -> ""
             }
             findViewById<TextView>(R.id.download_text_view).text = text
+        }
+
+        override fun onDownloadRemoved(downloadManager: DownloadManager, download: Download) {
+            findViewById<TextView>(R.id.download_text_view).text = ""
         }
     }
 
