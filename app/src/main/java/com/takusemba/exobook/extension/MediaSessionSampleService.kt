@@ -240,7 +240,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
 
         private const val TAG = "MediaSessionSample"
         private const val ROOT_ID = "media-session-sample"
-        private const val NOTIFICATION_ID = 0
+        private const val NOTIFICATION_ID = 200
 
         private val SONGS = listOf(
             Song(

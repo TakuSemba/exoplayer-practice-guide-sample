@@ -15,7 +15,7 @@ import com.google.android.exoplayer2.offline.Download
 import com.google.android.exoplayer2.offline.DownloadHelper
 import com.google.android.exoplayer2.offline.DownloadManager
 import com.google.android.exoplayer2.offline.DownloadService
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
@@ -103,8 +103,7 @@ class DownloadSampleActivity : AppCompatActivity() {
         val playButton = findViewById<Button>(R.id.play_download_button)
         playButton.setOnClickListener {
             val downloadManager = (application as App).downloadManager
-            val download =
-                downloadManager.downloadIndex.getDownload(CONTENT_ID)
+            val download = downloadManager.downloadIndex.getDownload(CONTENT_ID)
             if (download?.state == Download.STATE_COMPLETED) {
                 initializePlayer()
             } else {
@@ -189,7 +188,7 @@ class DownloadSampleActivity : AppCompatActivity() {
         playerView.player = player
 
         val dataSourceFactory = (application as App).buildCacheDataSourceFactory()
-        val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+        val mediaSource = DashMediaSource.Factory(dataSourceFactory)
             .createMediaSource(URI)
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)

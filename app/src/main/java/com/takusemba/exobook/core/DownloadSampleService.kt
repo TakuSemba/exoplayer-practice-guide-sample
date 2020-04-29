@@ -8,12 +8,13 @@ import com.google.android.exoplayer2.scheduler.PlatformScheduler
 import com.google.android.exoplayer2.scheduler.Scheduler
 import com.google.android.exoplayer2.util.NotificationUtil
 import com.takusemba.exobook.App
+import com.takusemba.exobook.App.Companion.CHANNEL_ID
 import com.takusemba.exobook.R
 
 class DownloadSampleService : DownloadService(
     NOTIFICATION_ID,
     DEFAULT_FOREGROUND_NOTIFICATION_UPDATE_INTERVAL,
-    App.CHANNEL_ID,
+    CHANNEL_ID,
     R.string.channel_name,
     R.string.channel_description
 ) {

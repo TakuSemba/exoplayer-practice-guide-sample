@@ -81,7 +81,7 @@
             android:theme="@style/AppTheme.Player" />
         <activity
             android:name=".extension.SchedulerSampleActivity"
-            android:theme="@style/AppTheme.Player.WithActionBar" />
+            android:theme="@style/AppTheme.Player" />
         <activity
             android:name=".extension.RtmpSampleActivity"
             android:theme="@style/AppTheme.Player" />
