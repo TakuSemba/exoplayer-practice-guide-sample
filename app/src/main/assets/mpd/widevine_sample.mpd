@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Generated with https://github.com/google/shaka-packager version v2.4.2-c60e988afa-release-->
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-live:2011" minBufferTime="PT2S" type="dynamic" publishTime="2020-04-29T03:10:05Z" availabilityStartTime="2020-04-29T03:10:05Z" minimumUpdatePeriod="PT5S" timeShiftBufferDepth="PT1800S">
+  <Period id="0" start="PT0S">
+    <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="15360/512" segmentAlignment="true" par="16:9">
+      <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="20b4dc0b-8a4d-5d3f-8e98-7e996d058128"/>
+      <ContentProtection schemeIdUri="urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed">
+        <cenc:pssh>AAAAOHBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAABgiEJ4q2Jw04i2y7Xw6S9FIBfhI49yVmwY=</cenc:pssh>
+      </ContentProtection>
+      <Representation id="0" bandwidth="1658878" codecs="avc1.64001f" mimeType="video/mp4" sar="1:1">
+        <SegmentTemplate timescale="15360" initialization="./../mp4/widevine-sample-init.mp4" media="./../mp4/widevine-sample-$Number$.m4s" startNumber="1">
+          <SegmentTimeline>
+            <S t="0" d="128000"/>
+            <S t="128000" d="25600"/>
+          </SegmentTimeline>
+        </SegmentTemplate>
+      </Representation>
+    </AdaptationSet>
+  </Period>
+</MPD>
