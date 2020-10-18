@@ -119,8 +119,10 @@ class AesSampleActivity : AppCompatActivity() {
         private val mainDataSource: DataSource,
         private val testKeyDataSource: TestKeyDataSource
     ) : DataSource {
+
         private var dataSource: DataSource? = null
-        override fun addTransferListener(transferListener: TransferListener?) {
+
+        override fun addTransferListener(transferListener: TransferListener) {
             mainDataSource.addTransferListener(transferListener)
             testKeyDataSource.addTransferListener(transferListener)
         }

@@ -12,6 +12,7 @@ import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.drm.DefaultDrmSessionManager
+import com.google.android.exoplayer2.drm.DrmSessionEventListener
 import com.google.android.exoplayer2.drm.FrameworkMediaDrm
 import com.google.android.exoplayer2.drm.HttpMediaDrmCallback
 import com.google.android.exoplayer2.drm.OfflineLicenseHelper
@@ -63,7 +64,8 @@ class DownloadSampleActivity : AppCompatActivity() {
 
         override fun onDownloadChanged(
             downloadManager: DownloadManager,
-            download: Download
+            download: Download,
+            finalException: Exception?
         ) {
             val text = when (download.state) {
                 Download.STATE_DOWNLOADING -> {
@@ -181,16 +183,17 @@ class DownloadSampleActivity : AppCompatActivity() {
                         httpDataSourceFactory.createDataSource(),
                         URI
                     )
-                    val drmInitData = DashUtil.loadDrmInitData(
+                    val format = DashUtil.loadFormatWithDrmInitData(
                         httpDataSourceFactory.createDataSource(),
                         dashManifest.getPeriod(0)
                     )
                     val offlineLicenseHelper = OfflineLicenseHelper.newWidevineInstance(
                         LICENSE_URL,
-                        httpDataSourceFactory
+                        httpDataSourceFactory,
+                        DrmSessionEventListener.EventDispatcher()
                     )
-                    offlineLicense = if (drmInitData != null) {
-                        offlineLicenseHelper.downloadLicense(drmInitData)
+                    offlineLicense = if (format != null) {
+                        offlineLicenseHelper.downloadLicense(format)
                     } else {
                         null
                     }

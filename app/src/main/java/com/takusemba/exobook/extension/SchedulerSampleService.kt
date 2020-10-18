@@ -10,6 +10,7 @@ import com.google.android.exoplayer2.util.NotificationUtil
 import com.takusemba.exobook.App
 import com.takusemba.exobook.App.Companion.CHANNEL_ID
 import com.takusemba.exobook.R
+import java.lang.Exception
 
 class SchedulerSampleService : DownloadService(
     NOTIFICATION_ID,
@@ -20,19 +21,27 @@ class SchedulerSampleService : DownloadService(
 ) {
 
     private val downloadListener = object : DownloadManager.Listener {
+
         override fun onDownloadChanged(
             downloadManager: DownloadManager,
-            download: Download
+            download: Download,
+            finalException: Exception?
         ) {
             val notification: Notification = when (download.state) {
                 Download.STATE_COMPLETED -> {
                     (application as App).notificationHelper.buildDownloadCompletedNotification(
-                        android.R.drawable.stat_sys_download_done, null, null
+                        this@SchedulerSampleService,
+                        android.R.drawable.stat_sys_download_done,
+                        null,
+                        null
                     )
                 }
                 Download.STATE_FAILED -> {
                     (application as App).notificationHelper.buildDownloadFailedNotification(
-                        android.R.drawable.stat_sys_download_done, null, null
+                        this@SchedulerSampleService,
+                        android.R.drawable.stat_sys_download_done,
+                        null,
+                        null
                     )
                 }
                 else -> return
@@ -61,7 +70,13 @@ class SchedulerSampleService : DownloadService(
 
     override fun getForegroundNotification(downloads: MutableList<Download>): Notification {
         return (application as App).notificationHelper
-            .buildProgressNotification(android.R.drawable.stat_sys_download, null, null, downloads)
+            .buildProgressNotification(
+                this,
+                android.R.drawable.stat_sys_download,
+                null,
+                null,
+                downloads
+            )
     }
 
     override fun getScheduler(): Scheduler? {

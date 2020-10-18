@@ -20,19 +20,27 @@ class DownloadSampleService : DownloadService(
 ) {
 
     private val downloadListener = object : DownloadManager.Listener {
+
         override fun onDownloadChanged(
             downloadManager: DownloadManager,
-            download: Download
+            download: Download,
+            finalException: Exception?
         ) {
             val notification: Notification = when (download.state) {
                 Download.STATE_COMPLETED -> {
                     (application as App).notificationHelper.buildDownloadCompletedNotification(
-                        android.R.drawable.stat_sys_download_done, null, null
+                        this@DownloadSampleService,
+                        android.R.drawable.stat_sys_download_done,
+                        null,
+                        null
                     )
                 }
                 Download.STATE_FAILED -> {
                     (application as App).notificationHelper.buildDownloadFailedNotification(
-                        android.R.drawable.stat_sys_download_done, null, null
+                        this@DownloadSampleService,
+                        android.R.drawable.stat_sys_download_done,
+                        null,
+                        null
                     )
                 }
                 else -> return
@@ -61,7 +69,13 @@ class DownloadSampleService : DownloadService(
 
     override fun getForegroundNotification(downloads: MutableList<Download>): Notification {
         return (application as App).notificationHelper
-            .buildProgressNotification(android.R.drawable.stat_sys_download, null, null, downloads)
+            .buildProgressNotification(
+                this,
+                android.R.drawable.stat_sys_download,
+                null,
+                null,
+                downloads
+            )
     }
 
     override fun getScheduler(): Scheduler? {

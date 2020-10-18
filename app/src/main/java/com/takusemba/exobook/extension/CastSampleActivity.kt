@@ -4,11 +4,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.cast.CastPlayer
 import com.google.android.exoplayer2.ext.cast.DefaultMediaItemConverter
-import com.google.android.exoplayer2.ext.cast.MediaItem
 import com.google.android.exoplayer2.ext.cast.SessionAvailabilityListener
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
@@ -37,7 +37,6 @@ class CastSampleActivity : AppCompatActivity() {
                 val item = MediaItem.Builder()
                     .setUri(URI)
                     .setMimeType(MimeTypes.VIDEO_MP4)
-                    .setTitle("Big Buck Bunny")
                     .build()
                 castPlayer.loadItem(mediaItemConverter.toMediaQueueItem(item), 0L)
             }

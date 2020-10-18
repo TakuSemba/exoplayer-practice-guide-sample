@@ -131,7 +131,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
             override fun onPrepareFromMediaId(
                 mediaId: String,
                 playWhenReady: Boolean,
-                extras: Bundle
+                extras: Bundle?
             ) {
                 val song = SONGS.find { it.id == mediaId } ?: return
                 val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
@@ -142,7 +142,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
                 currentIndex = SONGS.indexOf(song)
             }
 
-            override fun onPrepareFromUri(uri: Uri, playWhenReady: Boolean, extras: Bundle) {
+            override fun onPrepareFromUri(uri: Uri, playWhenReady: Boolean, extras: Bundle?) {
                 val song = SONGS.find { it.source == uri.toString() } ?: return
                 val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
                     .createMediaSource(uri)
@@ -155,7 +155,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
             override fun onPrepareFromSearch(
                 query: String,
                 playWhenReady: Boolean,
-                extras: Bundle
+                extras: Bundle?
             ) {
                 val song = SONGS.find { it.title == query } ?: return
                 val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)

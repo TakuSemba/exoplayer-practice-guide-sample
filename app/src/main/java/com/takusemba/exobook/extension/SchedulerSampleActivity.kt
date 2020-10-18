@@ -48,7 +48,8 @@ class SchedulerSampleActivity : AppCompatActivity() {
 
         override fun onDownloadChanged(
             downloadManager: DownloadManager,
-            download: Download
+            download: Download,
+            finalException: Exception?
         ) {
             val text = when (download.state) {
                 Download.STATE_DOWNLOADING -> {
@@ -142,14 +143,7 @@ class SchedulerSampleActivity : AppCompatActivity() {
     }
 
     private fun addDownload() {
-        val downloadRequest = DownloadRequest(
-            CONTENT_ID,
-            DownloadRequest.TYPE_PROGRESSIVE,
-            URI,
-            emptyList(),
-            null,
-            null
-        )
+        val downloadRequest = DownloadRequest.Builder(CONTENT_ID, URI).build()
         DownloadService.sendAddDownload(
             this,
             SchedulerSampleService::class.java,

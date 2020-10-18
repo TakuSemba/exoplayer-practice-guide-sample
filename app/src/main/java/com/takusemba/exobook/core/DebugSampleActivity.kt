@@ -1,6 +1,6 @@
 package com.takusemba.exobook.core
 
-import android.app.AlertDialog
+import android.app.Dialog
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
@@ -30,7 +30,7 @@ class DebugSampleActivity : AppCompatActivity() {
     private var debugTextViewHelper: DebugTextViewHelper? = null
     private var statsListener: PlaybackStatsListener? = null
 
-    private var dialog: AlertDialog? = null
+    private var dialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

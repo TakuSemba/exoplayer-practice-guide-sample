@@ -20,10 +20,10 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultLoadErrorHandlingPolicy
 import com.google.android.exoplayer2.upstream.HttpDataSource
 import com.google.android.exoplayer2.upstream.LoadErrorHandlingPolicy
+import com.google.android.exoplayer2.upstream.LoadErrorHandlingPolicy.LoadErrorInfo
 import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.App
 import com.takusemba.exobook.R
-import java.io.IOException
 import java.util.*
 
 class CustomizeSampleActivity : AppCompatActivity() {
@@ -140,12 +140,8 @@ class CustomizeSampleActivity : AppCompatActivity() {
     private class MyLoadErrorHandlingPolicy :
         LoadErrorHandlingPolicy by DefaultLoadErrorHandlingPolicy() {
 
-        override fun getRetryDelayMsFor(
-            dataType: Int,
-            loadDurationMs: Long,
-            exception: IOException?,
-            errorCount: Int
-        ): Long {
+        override fun getRetryDelayMsFor(loadErrorInfo: LoadErrorInfo): Long {
+            val exception = loadErrorInfo.exception
             if (exception is HttpDataSource.InvalidResponseCodeException) {
                 val responseCode = exception.responseCode
                 return if (responseCode in 500..599) RETRY_DELAY else C.TIME_UNSET
@@ -180,10 +176,6 @@ class CustomizeSampleActivity : AppCompatActivity() {
             val mutableMediaCodecInfos = exoDefaultMediaCodecInfos.toMutableList()
             applyWorkarounds(mutableMediaCodecInfos)
             return Collections.unmodifiableList(mutableMediaCodecInfos)
-        }
-
-        override fun getPassthroughDecoderInfo(): MediaCodecInfo? {
-            return exoDefault.passthroughDecoderInfo
         }
 
         private fun applyWorkarounds(codecInfos: MutableList<MediaCodecInfo>) {
