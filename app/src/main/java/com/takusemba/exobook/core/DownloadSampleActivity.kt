@@ -141,8 +141,7 @@ class DownloadSampleActivity : AppCompatActivity() {
         if (this.downloadHelper != null) {
             downloadHelper?.release()
         }
-        val userAgent = Util.getUserAgent(this, "SampleApp")
-        val httpDataSourceFactory = DefaultHttpDataSourceFactory(userAgent)
+        val httpDataSourceFactory = DefaultHttpDataSourceFactory()
         val downloadHelper = DownloadHelper.forDash(
             this,
             URI,

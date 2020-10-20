@@ -10,7 +10,6 @@ import com.google.android.exoplayer2.util.NotificationUtil
 import com.takusemba.exobook.App
 import com.takusemba.exobook.App.Companion.CHANNEL_ID
 import com.takusemba.exobook.R
-import java.lang.Exception
 
 class SchedulerSampleService : DownloadService(
     NOTIFICATION_ID,

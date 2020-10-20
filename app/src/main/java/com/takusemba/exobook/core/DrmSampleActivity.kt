@@ -14,7 +14,6 @@ import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
-import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.R
 
 class DrmSampleActivity : AppCompatActivity() {
@@ -41,8 +40,7 @@ class DrmSampleActivity : AppCompatActivity() {
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
 
-        val userAgent = Util.getUserAgent(this, "SampleApp")
-        val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
+        val dataSourceFactory = DefaultDataSourceFactory(this)
         val mediaSource = when (DRM_SCHEME_TYPE) {
             DrmSchemeType.CLEARKEY -> {
                 val drmCallback = LocalMediaDrmCallback(CLEARKEY_RESPONSE.toByteArray())
@@ -59,7 +57,7 @@ class DrmSampleActivity : AppCompatActivity() {
             DrmSchemeType.WIDEVINE -> {
                 val drmCallback = HttpMediaDrmCallback(
                     "https://proxy.uat.widevine.com/proxy?provider=widevine_test",
-                    DefaultHttpDataSourceFactory(userAgent)
+                    DefaultHttpDataSourceFactory()
                 )
                 val drmSessionManager = DefaultDrmSessionManager.Builder()
                     .setUuidAndExoMediaDrmProvider(

@@ -20,7 +20,6 @@ import com.google.android.exoplayer2.ui.TrackSelectionDialogBuilder
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.EventLogger
 import com.google.android.exoplayer2.util.Log
-import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.R
 
 class DebugSampleActivity : AppCompatActivity() {
@@ -78,8 +77,7 @@ class DebugSampleActivity : AppCompatActivity() {
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
 
-        val userAgent = Util.getUserAgent(this, "SampleApp")
-        val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
+        val dataSourceFactory = DefaultDataSourceFactory(this)
         val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
             .createMediaSource(URI)
 

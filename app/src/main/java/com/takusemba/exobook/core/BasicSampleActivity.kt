@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.ExoPlaybackException
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -19,7 +20,6 @@ import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.Util
 import com.google.android.exoplayer2.video.VideoListener
 import com.takusemba.exobook.R
 
@@ -48,10 +48,10 @@ class BasicSampleActivity : AppCompatActivity() {
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
 
-        val userAgent = Util.getUserAgent(this, "SampleApp")
-        val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
+        val dataSourceFactory = DefaultDataSourceFactory(this)
+        val mediaItem = MediaItem.fromUri(URI)
         val childMediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(URI)
+            .createMediaSource(mediaItem)
 
         val mediaSource = when (TYPE) {
             MediaSourceType.DEFAULT -> childMediaSource
@@ -101,7 +101,7 @@ class BasicSampleActivity : AppCompatActivity() {
         player.addTextOutput { cue -> }
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(mediaSource)
+        player.setMediaSource(mediaSource)
         player.playWhenReady = true
 
         this.player = player

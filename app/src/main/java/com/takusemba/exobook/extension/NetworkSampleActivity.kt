@@ -12,7 +12,6 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
-import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.R
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -44,11 +43,10 @@ class NetworkSampleActivity : AppCompatActivity() {
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
 
-        val userAgent = Util.getUserAgent(this, "SampleApp")
         val dataSourceFactory = when (TYPE) {
-            DataSourceFactoryType.OK_HTTP -> getOkHttpDataSourceFactory(userAgent)
-            DataSourceFactoryType.CRONET -> getCronetDataSourceFactory(userAgent)
-            DataSourceFactoryType.DEFAULT -> getDefaultHttpDataSourceFactory(userAgent)
+            DataSourceFactoryType.OK_HTTP -> getOkHttpDataSourceFactory()
+            DataSourceFactoryType.CRONET -> getCronetDataSourceFactory()
+            DataSourceFactoryType.DEFAULT -> getDefaultHttpDataSourceFactory()
         }
         val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
             .createMediaSource(URI)
@@ -66,26 +64,26 @@ class NetworkSampleActivity : AppCompatActivity() {
         player = null
     }
 
-    private fun getDefaultHttpDataSourceFactory(userAgent: String): DataSource.Factory {
-        return DefaultHttpDataSourceFactory(userAgent)
+    private fun getDefaultHttpDataSourceFactory(): DataSource.Factory {
+        return DefaultHttpDataSourceFactory()
     }
 
-    private fun getOkHttpDataSourceFactory(userAgent: String): DataSource.Factory {
+    private fun getOkHttpDataSourceFactory(): DataSource.Factory {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS)
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .build()
-        return OkHttpDataSourceFactory(okHttpClient, userAgent)
+        return OkHttpDataSourceFactory(okHttpClient)
     }
 
-    private fun getCronetDataSourceFactory(userAgent: String): DataSource.Factory {
+    private fun getCronetDataSourceFactory(): DataSource.Factory {
         val cronetEngine = CronetEngine.Builder(this)
             .enableQuic(true)
             .build()
         val cronetWrapper = CronetEngineWrapper(cronetEngine)
         val executor = Executors.newSingleThreadExecutor()
-        return CronetDataSourceFactory(cronetWrapper, executor, userAgent)
+        return CronetDataSourceFactory(cronetWrapper, executor)
     }
 
     private fun CronetEngine.startNetLogForCronet() {

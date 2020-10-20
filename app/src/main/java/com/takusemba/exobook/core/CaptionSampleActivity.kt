@@ -13,7 +13,6 @@ import com.google.android.exoplayer2.source.SingleSampleMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.MimeTypes
-import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.R
 
 class CaptionSampleActivity : AppCompatActivity() {
@@ -41,8 +40,7 @@ class CaptionSampleActivity : AppCompatActivity() {
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
 
-        val userAgent = Util.getUserAgent(this, "SampleApp")
-        val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
+        val dataSourceFactory = DefaultDataSourceFactory(this)
         val videoSource = ProgressiveMediaSource.Factory(dataSourceFactory)
             .createMediaSource(URI)
         val captionMediaSource = when (TYPE) {

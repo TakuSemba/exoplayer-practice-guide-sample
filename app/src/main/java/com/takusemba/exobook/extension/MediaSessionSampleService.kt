@@ -32,7 +32,6 @@ import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.App.Companion.CHANNEL_ID
 import com.takusemba.exobook.R
 import java.util.*
@@ -91,8 +90,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
     }
 
     private val mediaSession by lazy { MediaSessionCompat(application, TAG) }
-    private val userAgent by lazy { Util.getUserAgent(application, "SampleApp") }
-    private val dataSourceFactory by lazy { DefaultDataSourceFactory(application, userAgent) }
+    private val dataSourceFactory by lazy { DefaultDataSourceFactory(application) }
     private val player by lazy { SimpleExoPlayer.Builder(this).build() }
     private val mediaSessionConnector by lazy { MediaSessionConnector(mediaSession) }
 

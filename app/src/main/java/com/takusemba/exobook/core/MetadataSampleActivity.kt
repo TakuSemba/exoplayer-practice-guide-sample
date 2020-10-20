@@ -12,7 +12,6 @@ import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Log
-import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.R
 
 class MetadataSampleActivity : AppCompatActivity() {
@@ -39,8 +38,7 @@ class MetadataSampleActivity : AppCompatActivity() {
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
 
-        val userAgent = Util.getUserAgent(this, "SampleApp")
-        val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
+        val dataSourceFactory = DefaultDataSourceFactory(this)
         val mediaSource = when (metadataType) {
             MetadataType.ID3 -> {
                 HlsMediaSource.Factory(dataSourceFactory).createMediaSource(HLS_URI)
@@ -61,7 +59,10 @@ class MetadataSampleActivity : AppCompatActivity() {
                     Log.d("TimedMetadata", "${player.currentPosition}ms: ${data.value}")
                 }
                 if (data is EventMessage) {
-                    Log.d("EventMessage", "${player.currentPosition}ms: ${String(data.messageData)}")
+                    Log.d(
+                        "EventMessage",
+                        "${player.currentPosition}ms: ${String(data.messageData)}"
+                    )
                 }
             }
         }

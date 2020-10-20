@@ -15,7 +15,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.TransferListener
 import com.google.android.exoplayer2.util.Assertions
 import com.google.android.exoplayer2.util.Log
-import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.R
 import java.io.IOException
 
@@ -156,8 +155,7 @@ class AesSampleActivity : AppCompatActivity() {
     }
 
     class DynamicDataSourceFactory(context: Context) : DataSource.Factory {
-        private val userAgent = Util.getUserAgent(context, "SampleApp")
-        private val httpDataSourceFactory = DefaultDataSourceFactory(context, userAgent)
+        private val httpDataSourceFactory = DefaultDataSourceFactory(context)
         private val testKeyDataSourceFactory = TestKeyDataSourceFactory()
         override fun createDataSource(): DataSource = DynamicDataSource(
             httpDataSourceFactory.createDataSource(),
