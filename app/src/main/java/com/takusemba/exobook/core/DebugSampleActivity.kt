@@ -99,7 +99,7 @@ class DebugSampleActivity : AppCompatActivity() {
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.setMediaSource(mediaSource)
         player.prepare()
-        player.playWhenReady = true
+        player.play()
 
         val debugTextView = findViewById<TextView>(R.id.debug_text_view)
         debugTextViewHelper = DebugTextViewHelper(player, debugTextView)

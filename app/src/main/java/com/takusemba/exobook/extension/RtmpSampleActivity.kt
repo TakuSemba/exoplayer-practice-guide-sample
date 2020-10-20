@@ -48,7 +48,7 @@ class RtmpSampleActivity : AppCompatActivity() {
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.setMediaSource(mediaSource)
         player.prepare()
-        player.playWhenReady = true
+        player.play()
 
         this.player = player
     }

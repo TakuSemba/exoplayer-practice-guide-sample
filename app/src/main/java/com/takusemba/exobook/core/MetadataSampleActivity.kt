@@ -54,7 +54,7 @@ class MetadataSampleActivity : AppCompatActivity() {
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.setMediaSource(mediaSource)
         player.prepare()
-        player.playWhenReady = true
+        player.play()
 
         player.addMetadataOutput { metadata ->
             repeat(metadata.length()) { index ->

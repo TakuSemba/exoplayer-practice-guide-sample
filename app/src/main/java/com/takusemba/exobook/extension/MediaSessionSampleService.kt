@@ -204,8 +204,9 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
             concatenatingMediaSource.addMediaSource(mediaSource)
         }
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(concatenatingMediaSource)
-        player.playWhenReady = true
+        player.setMediaSource(concatenatingMediaSource)
+        player.prepare()
+        player.play()
         player.addListener(object : Player.EventListener {
             override fun onPositionDiscontinuity(reason: Int) {
                 currentIndex = player.currentWindowIndex
