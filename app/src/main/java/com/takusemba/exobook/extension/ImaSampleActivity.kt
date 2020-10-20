@@ -10,7 +10,7 @@ import com.google.android.exoplayer2.ext.ima.ImaAdsLoader
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.ads.AdsLoader
 import com.google.android.exoplayer2.source.ads.AdsMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.takusemba.exobook.R
 
@@ -43,7 +43,7 @@ class ImaSampleActivity : AppCompatActivity() {
             .setAdEventListener { adEvent -> /* do something */ }
             .buildForAdTag(AD_URI)
 
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
         val mediaItem = MediaItem.fromUri(URI)

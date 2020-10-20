@@ -11,13 +11,12 @@ import com.google.android.exoplayer2.ext.cast.CastPlayer
 import com.google.android.exoplayer2.ext.cast.DefaultMediaItemConverter
 import com.google.android.exoplayer2.ext.cast.SessionAvailabilityListener
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastContext
 import com.takusemba.exobook.R
-import com.takusemba.exobook.core.UiSampleActivity
 
 class CastSampleActivity : AppCompatActivity() {
 
@@ -67,7 +66,7 @@ class CastSampleActivity : AppCompatActivity() {
     private fun initializePlayer() {
         val player = SimpleExoPlayer.Builder(this).build()
 
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
         val mediaItem = MediaItem.fromUri(URI)

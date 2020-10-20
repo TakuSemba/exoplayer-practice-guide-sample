@@ -24,7 +24,7 @@ import com.google.android.exoplayer2.offline.DownloadService
 import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.source.dash.DashUtil
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.App
@@ -232,7 +232,7 @@ class DownloadSampleActivity : AppCompatActivity() {
 
     private fun initializePlayer() {
         val player = SimpleExoPlayer.Builder(this).build()
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
         val userAgent = Util.getUserAgent(this, "SampleApp")

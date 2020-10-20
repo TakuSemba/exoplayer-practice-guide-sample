@@ -13,7 +13,7 @@ import com.google.android.exoplayer2.mediacodec.MediaCodecSelector
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.BandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
@@ -83,7 +83,7 @@ class CustomizeSampleActivity : AppCompatActivity() {
             .setBandwidthMeter(getDefaultBandwidthMeter())
             .build()
 
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
 

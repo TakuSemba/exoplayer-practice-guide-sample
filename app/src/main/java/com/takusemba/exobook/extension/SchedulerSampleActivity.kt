@@ -14,7 +14,7 @@ import com.google.android.exoplayer2.offline.DownloadManager
 import com.google.android.exoplayer2.offline.DownloadRequest
 import com.google.android.exoplayer2.offline.DownloadService
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.takusemba.exobook.App
 import com.takusemba.exobook.R
 
@@ -123,7 +123,7 @@ class SchedulerSampleActivity : AppCompatActivity() {
 
     private fun initializePlayer() {
         val player = SimpleExoPlayer.Builder(this).build()
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
         val mediaItem = MediaItem.fromUri(URI)

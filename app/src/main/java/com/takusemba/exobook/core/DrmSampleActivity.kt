@@ -12,7 +12,7 @@ import com.google.android.exoplayer2.drm.FrameworkMediaDrm
 import com.google.android.exoplayer2.drm.HttpMediaDrmCallback
 import com.google.android.exoplayer2.drm.LocalMediaDrmCallback
 import com.google.android.exoplayer2.source.dash.DashMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.takusemba.exobook.R
@@ -38,7 +38,7 @@ class DrmSampleActivity : AppCompatActivity() {
 
     private fun initializePlayer() {
         val player = SimpleExoPlayer.Builder(this).build()
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
         val dataSourceFactory = DefaultDataSourceFactory(this)

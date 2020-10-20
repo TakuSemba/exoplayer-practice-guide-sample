@@ -9,7 +9,7 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.takusemba.exobook.R
 
@@ -37,7 +37,7 @@ class CodecSampleActivity : AppCompatActivity() {
             .setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER)
         val player = SimpleExoPlayer.Builder(this, renderersFactory).build()
 
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
         val mediaItem = MediaItem.fromUri(URI)

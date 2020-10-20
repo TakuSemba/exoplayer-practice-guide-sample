@@ -16,7 +16,7 @@ import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.DebugTextViewHelper
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.ui.TrackSelectionDialogBuilder
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.EventLogger
@@ -75,7 +75,7 @@ class DebugSampleActivity : AppCompatActivity() {
         val player = SimpleExoPlayer.Builder(this)
             .setTrackSelector(trackSelector)
             .build()
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
         val mediaItem = MediaItem.fromUri(URI)

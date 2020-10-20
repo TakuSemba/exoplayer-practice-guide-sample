@@ -10,7 +10,7 @@ import com.google.android.exoplayer2.metadata.emsg.EventMessage
 import com.google.android.exoplayer2.metadata.id3.TextInformationFrame
 import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Log
 import com.takusemba.exobook.R
@@ -36,7 +36,7 @@ class MetadataSampleActivity : AppCompatActivity() {
 
     private fun initializePlayer() {
         val player = SimpleExoPlayer.Builder(this).build()
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
         val dataSourceFactory = DefaultDataSourceFactory(this)

@@ -10,7 +10,7 @@ import com.google.android.exoplayer2.ext.cronet.CronetDataSourceFactory
 import com.google.android.exoplayer2.ext.cronet.CronetEngineWrapper
 import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSourceFactory
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.takusemba.exobook.R
@@ -41,7 +41,7 @@ class NetworkSampleActivity : AppCompatActivity() {
 
     private fun initializePlayer() {
         val player = SimpleExoPlayer.Builder(this).build()
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
         val dataSourceFactory = when (TYPE) {

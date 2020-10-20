@@ -18,7 +18,7 @@ import com.google.android.exoplayer2.source.LoopingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.video.VideoListener
 import com.takusemba.exobook.R
@@ -45,7 +45,7 @@ class BasicSampleActivity : AppCompatActivity() {
     private fun initializePlayer() {
         val player = SimpleExoPlayer.Builder(this).build()
 
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
         val dataSourceFactory = DefaultDataSourceFactory(this)
