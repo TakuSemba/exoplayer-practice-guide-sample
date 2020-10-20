@@ -62,32 +62,47 @@ class BasicSampleActivity : AppCompatActivity() {
 
         player.addListener(object : Player.EventListener {
 
-            override fun onTimelineChanged(timeline: Timeline, reason: Int) = Unit
+            override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) = Unit
+
+            override fun onSeekProcessed() = Unit
 
             override fun onTracksChanged(
                 trackGroups: TrackGroupArray,
                 trackSelections: TrackSelectionArray
             ) = Unit
 
-            override fun onLoadingChanged(isLoading: Boolean) = Unit
-
-            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) = Unit
-
-            override fun onPlaybackSuppressionReasonChanged(playbackSuppressionReason: Int) = Unit
-
-            override fun onIsPlayingChanged(isPlaying: Boolean) = Unit
-
-            override fun onRepeatModeChanged(repeatMode: Int) = Unit
-
-            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) = Unit
+            override fun onIsLoadingChanged(isLoading: Boolean) = Unit
 
             override fun onPlayerError(error: ExoPlaybackException) = Unit
 
+            override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) = Unit
+
+            override fun onLoadingChanged(isLoading: Boolean) = Unit
+
             override fun onPositionDiscontinuity(reason: Int) = Unit
 
-            override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) = Unit
+            override fun onRepeatModeChanged(repeatMode: Int) = Unit
 
-            override fun onSeekProcessed() = Unit
+            override fun onPlaybackStateChanged(state: Int) = Unit
+
+            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) = Unit
+
+            override fun onPlaybackSuppressionReasonChanged(playbackSuppressionReason: Int) = Unit
+
+            override fun onTimelineChanged(timeline: Timeline, reason: Int) = Unit
+
+            override fun onTimelineChanged(timeline: Timeline, manifest: Any?, reason: Int) = Unit
+
+            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) = Unit
+
+            override fun onIsPlayingChanged(isPlaying: Boolean) = Unit
+
+            override fun onExperimentalOffloadSchedulingEnabledChanged(
+                offloadSchedulingEnabled: Boolean
+            ) = Unit
+
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) = Unit
+
         })
 
         player.addAnalyticsListener(object : AnalyticsListener {})
