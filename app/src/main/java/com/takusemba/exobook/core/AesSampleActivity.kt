@@ -48,7 +48,8 @@ class AesSampleActivity : AppCompatActivity() {
         val mediaSource = HlsMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(mediaSource)
+        player.setMediaSource(mediaSource)
+        player.prepare()
         player.playWhenReady = true
 
         this.player = player

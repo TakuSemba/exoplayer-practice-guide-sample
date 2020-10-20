@@ -70,7 +70,8 @@ class CaptionSampleActivity : AppCompatActivity() {
         val mediaSource = MergingMediaSource(videoSource, captionMediaSource)
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(mediaSource)
+        player.setMediaSource(mediaSource)
+        player.prepare()
         player.playWhenReady = true
 
         this.player = player

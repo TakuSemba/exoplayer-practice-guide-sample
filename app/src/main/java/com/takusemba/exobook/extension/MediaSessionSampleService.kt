@@ -136,7 +136,8 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
                 val mediaItem = MediaItem.fromUri(Uri.parse(song.source))
                 val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
                     .createMediaSource(mediaItem)
-                player.prepare(mediaSource)
+                player.setMediaSource(mediaSource)
+                player.prepare()
                 player.playWhenReady = playWhenReady
                 mediaSession.setMetadata(song.toMediaMetadata())
                 currentIndex = SONGS.indexOf(song)
@@ -144,9 +145,11 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
 
             override fun onPrepareFromUri(uri: Uri, playWhenReady: Boolean, extras: Bundle?) {
                 val song = SONGS.find { it.source == uri.toString() } ?: return
+                val mediaItem = MediaItem.fromUri(uri)
                 val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(uri)
-                player.prepare(mediaSource)
+                    .createMediaSource(mediaItem)
+                player.setMediaSource(mediaSource)
+                player.prepare()
                 player.playWhenReady = playWhenReady
                 mediaSession.setMetadata(song.toMediaMetadata())
                 currentIndex = SONGS.indexOf(song)
@@ -161,7 +164,8 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
                 val mediaItem = MediaItem.fromUri(Uri.parse(song.source))
                 val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
                     .createMediaSource(mediaItem)
-                player.prepare(mediaSource)
+                player.setMediaSource(mediaSource)
+                player.prepare()
                 player.playWhenReady = playWhenReady
                 mediaSession.setMetadata(song.toMediaMetadata())
                 currentIndex = SONGS.indexOf(song)

@@ -59,7 +59,8 @@ class ImaSampleActivity : AppCompatActivity() {
             playerView
         )
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(adsMediaSource)
+        player.setMediaSource(mediaSource)
+        player.prepare()
         player.playWhenReady = true
 
         this.player = player
