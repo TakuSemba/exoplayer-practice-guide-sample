@@ -3,6 +3,7 @@ package com.takusemba.exobook.core
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.metadata.emsg.EventMessage
@@ -41,10 +42,12 @@ class MetadataSampleActivity : AppCompatActivity() {
         val dataSourceFactory = DefaultDataSourceFactory(this)
         val mediaSource = when (metadataType) {
             MetadataType.ID3 -> {
-                HlsMediaSource.Factory(dataSourceFactory).createMediaSource(HLS_URI)
+                val mediaItem = MediaItem.fromUri(HLS_URI)
+                HlsMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
             }
             MetadataType.EMSG -> {
-                DashMediaSource.Factory(dataSourceFactory).createMediaSource(DASH_URI)
+                val mediaItem = MediaItem.fromUri(DASH_URI)
+                DashMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
             }
         }
 

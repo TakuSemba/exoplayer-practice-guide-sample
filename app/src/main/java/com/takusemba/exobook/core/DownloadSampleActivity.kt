@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultRenderersFactory
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.drm.DefaultDrmSessionManager
@@ -256,9 +257,10 @@ class DownloadSampleActivity : AppCompatActivity() {
                 offlineLicense
             )
         }
+        val mediaItem = MediaItem.fromUri(URI)
         val mediaSource = DashMediaSource.Factory(dataSourceFactory)
             .setDrmSessionManager(drmSessionManager)
-            .createMediaSource(URI)
+            .createMediaSource(mediaItem)
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.prepare(mediaSource)

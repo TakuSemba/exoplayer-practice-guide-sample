@@ -23,6 +23,7 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.media.MediaBrowserServiceCompat
 import com.google.android.exoplayer2.ControlDispatcher
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
@@ -132,8 +133,9 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
                 extras: Bundle?
             ) {
                 val song = SONGS.find { it.id == mediaId } ?: return
+                val mediaItem = MediaItem.fromUri(Uri.parse(song.source))
                 val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(Uri.parse(song.source))
+                    .createMediaSource(mediaItem)
                 player.prepare(mediaSource)
                 player.playWhenReady = playWhenReady
                 mediaSession.setMetadata(song.toMediaMetadata())
@@ -156,8 +158,9 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
                 extras: Bundle?
             ) {
                 val song = SONGS.find { it.title == query } ?: return
+                val mediaItem = MediaItem.fromUri(Uri.parse(song.source))
                 val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(Uri.parse(song.source))
+                    .createMediaSource(mediaItem)
                 player.prepare(mediaSource)
                 player.playWhenReady = playWhenReady
                 mediaSession.setMetadata(song.toMediaMetadata())

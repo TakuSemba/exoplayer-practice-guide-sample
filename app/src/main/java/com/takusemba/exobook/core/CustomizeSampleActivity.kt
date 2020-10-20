@@ -86,6 +86,7 @@ class CustomizeSampleActivity : AppCompatActivity() {
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
 
+
         val dataSourceFactory = DefaultDataSourceFactory(this)
         val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
             .setLoadErrorHandlingPolicy(MyLoadErrorHandlingPolicy())

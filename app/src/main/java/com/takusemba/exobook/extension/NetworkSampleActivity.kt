@@ -3,6 +3,7 @@ package com.takusemba.exobook.extension
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.cronet.CronetDataSourceFactory
@@ -48,8 +49,9 @@ class NetworkSampleActivity : AppCompatActivity() {
             DataSourceFactoryType.CRONET -> getCronetDataSourceFactory()
             DataSourceFactoryType.DEFAULT -> getDefaultHttpDataSourceFactory()
         }
+        val mediaItem = MediaItem.fromUri(URI)
         val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(URI)
+            .createMediaSource(mediaItem)
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.prepare(mediaSource)

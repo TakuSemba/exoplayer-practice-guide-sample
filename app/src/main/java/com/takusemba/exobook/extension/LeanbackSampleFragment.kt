@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.leanback.app.VideoSupportFragment
 import androidx.leanback.app.VideoSupportFragmentGlueHost
 import androidx.leanback.media.PlaybackTransportControlGlue
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter
@@ -32,9 +33,10 @@ class LeanbackSampleFragment : VideoSupportFragment() {
         playerGlue.subtitle = "Leanback Subtitle"
         playerGlue.title = "Leanback Title"
 
+        val mediaItem = MediaItem.fromUri(URI)
         val dataSourceFactory = DefaultDataSourceFactory(requireContext())
         val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(URI)
+            .createMediaSource(mediaItem)
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.prepare(mediaSource)
         player.playWhenReady = true

@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.analytics.AnalyticsListener.EventTime
 import com.google.android.exoplayer2.analytics.PlaybackStats
@@ -77,9 +78,10 @@ class DebugSampleActivity : AppCompatActivity() {
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
 
+        val mediaItem = MediaItem.fromUri(URI)
         val dataSourceFactory = DefaultDataSourceFactory(this)
         val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(URI)
+            .createMediaSource(mediaItem)
 
         val eventLogger = EventLogger(trackSelector)
         player.addAnalyticsListener(eventLogger)

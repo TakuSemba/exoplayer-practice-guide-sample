@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.drm.DefaultDrmSessionManager
@@ -43,6 +44,7 @@ class DrmSampleActivity : AppCompatActivity() {
         val dataSourceFactory = DefaultDataSourceFactory(this)
         val mediaSource = when (DRM_SCHEME_TYPE) {
             DrmSchemeType.CLEARKEY -> {
+                val mediaItem = MediaItem.fromUri(CLEARKEY_URI)
                 val drmCallback = LocalMediaDrmCallback(CLEARKEY_RESPONSE.toByteArray())
                 val drmSessionManager = DefaultDrmSessionManager.Builder()
                     .setUuidAndExoMediaDrmProvider(
@@ -52,7 +54,7 @@ class DrmSampleActivity : AppCompatActivity() {
                     .build(drmCallback)
                 DashMediaSource.Factory(dataSourceFactory)
                     .setDrmSessionManager(drmSessionManager)
-                    .createMediaSource(CLEARKEY_URI)
+                    .createMediaSource(mediaItem)
             }
             DrmSchemeType.WIDEVINE -> {
                 val drmCallback = HttpMediaDrmCallback(
@@ -65,9 +67,10 @@ class DrmSampleActivity : AppCompatActivity() {
                         FrameworkMediaDrm.DEFAULT_PROVIDER
                     )
                     .build(drmCallback)
+                val mediaItem = MediaItem.fromUri(WIDEVINE_URI)
                 DashMediaSource.Factory(dataSourceFactory)
                     .setDrmSessionManager(drmSessionManager)
-                    .createMediaSource(WIDEVINE_URI)
+                    .createMediaSource(mediaItem)
             }
         }
 

@@ -3,6 +3,7 @@ package com.takusemba.exobook.extension
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.ima.ImaAdsLoader
@@ -45,9 +46,10 @@ class ImaSampleActivity : AppCompatActivity() {
         val playerView = findViewById<PlayerView>(R.id.player_view)
         playerView.player = player
 
+        val mediaItem = MediaItem.fromUri(URI)
         val dataSourceFactory = DefaultDataSourceFactory(this)
         val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(URI)
+            .createMediaSource(mediaItem)
 
         adsLoader.setPlayer(player)
         val adsMediaSource = AdsMediaSource(
