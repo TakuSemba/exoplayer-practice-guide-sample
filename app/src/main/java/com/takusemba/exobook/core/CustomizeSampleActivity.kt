@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.DefaultRenderersFactory
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.mediacodec.MediaCodecInfo
@@ -75,7 +76,7 @@ class CustomizeSampleActivity : AppCompatActivity() {
                 DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS,
                 DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
             )
-            .createDefaultLoadControl()
+            .build()
 
         val player = SimpleExoPlayer.Builder(this, renderersFactory)
             .setTrackSelector(trackSelector)
@@ -87,10 +88,11 @@ class CustomizeSampleActivity : AppCompatActivity() {
         playerView.player = player
 
 
+        val mediaItem = MediaItem.fromUri(URI)
         val dataSourceFactory = DefaultDataSourceFactory(this)
         val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
             .setLoadErrorHandlingPolicy(MyLoadErrorHandlingPolicy())
-            .createMediaSource(URI)
+            .createMediaSource(mediaItem)
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.setMediaSource(mediaSource)
