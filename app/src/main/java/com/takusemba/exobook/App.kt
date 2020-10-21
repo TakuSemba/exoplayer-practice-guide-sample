@@ -8,18 +8,15 @@ import com.google.android.exoplayer2.offline.DownloadManager
 import com.google.android.exoplayer2.ui.DownloadNotificationHelper
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
-import com.google.android.exoplayer2.upstream.FileDataSource
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
-import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
 import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.util.NotificationUtil
-import com.google.android.exoplayer2.util.Util
 import java.io.File
+import java.util.concurrent.Executors
 
 class App : Application() {
 
-    private val userAgent by lazy { Util.getUserAgent(this, "SampleApp") }
     private val downloadDirectory by lazy { getExternalFilesDir(null) ?: filesDir }
     private val databaseProvider by lazy { ExoDatabaseProvider(this) }
     private val downloadCache by lazy {
@@ -27,7 +24,13 @@ class App : Application() {
         SimpleCache(downloadContentDirectory, NoOpCacheEvictor(), databaseProvider)
     }
     val downloadManager by lazy {
-        DownloadManager(this, databaseProvider, downloadCache, buildCacheDataSourceFactory())
+        DownloadManager(
+            this,
+            databaseProvider,
+            downloadCache,
+            buildCacheDataSourceFactory(),
+            Executors.newFixedThreadPool(6)
+        )
     }
     val notificationHelper by lazy { DownloadNotificationHelper(this, CHANNEL_ID) }
 
@@ -46,17 +49,14 @@ class App : Application() {
         )
     }
 
-    fun buildCacheDataSourceFactory(): CacheDataSourceFactory {
+    fun buildCacheDataSourceFactory(): CacheDataSource.Factory {
         val upstreamFactory =
-            DefaultDataSourceFactory(this, DefaultHttpDataSourceFactory(userAgent))
-        return CacheDataSourceFactory(
-            downloadCache,
-            upstreamFactory,
-            FileDataSource.Factory(),
-            /* cacheWriteDataSinkFactory= */ null,
-            CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR,
-            /* eventListener= */ null
-        );
+            DefaultDataSourceFactory(this, DefaultHttpDataSourceFactory())
+        return CacheDataSource.Factory()
+            .setCache(downloadCache)
+            .setUpstreamDataSourceFactory(upstreamFactory)
+            .setCacheWriteDataSinkFactory(null)
+            .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR);
     }
 
     companion object {
