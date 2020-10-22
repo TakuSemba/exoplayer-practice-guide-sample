@@ -59,7 +59,7 @@ class ImaSampleActivity : AppCompatActivity() {
             playerView
         )
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.setMediaSource(mediaSource)
+        player.setMediaSource(adsMediaSource)
         player.prepare()
         player.play()
 
