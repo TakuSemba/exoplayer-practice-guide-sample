@@ -13,6 +13,7 @@ import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.takusemba.exobook.R
 
+// This sample requires useExoPlayerLocally=true in app/build.gradle
 class CodecSampleActivity : AppCompatActivity() {
 
     private var player: SimpleExoPlayer? = null
