@@ -8,12 +8,10 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.cast.CastPlayer
-import com.google.android.exoplayer2.ext.cast.DefaultMediaItemConverter
 import com.google.android.exoplayer2.ext.cast.SessionAvailabilityListener
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastContext
 import com.takusemba.exobook.R
@@ -26,18 +24,16 @@ class CastSampleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
-        val mediaItemConverter = DefaultMediaItemConverter()
         val castContext = CastContext.getSharedInstance(this)
         val castPlayer = CastPlayer(castContext)
 
         castPlayer.setSessionAvailabilityListener(object : SessionAvailabilityListener {
 
             override fun onCastSessionAvailable() {
-                val item = MediaItem.Builder()
-                    .setUri(URI)
-                    .setMimeType(MimeTypes.VIDEO_MP4)
-                    .build()
-                castPlayer.loadItem(mediaItemConverter.toMediaQueueItem(item), 0L)
+                val item = MediaItem.fromUri(URI)
+                castPlayer.setMediaItem(item)
+                castPlayer.prepare()
+                castPlayer.play()
             }
 
             override fun onCastSessionUnavailable() {
