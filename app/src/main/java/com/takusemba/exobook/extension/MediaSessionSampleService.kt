@@ -35,7 +35,7 @@ import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.takusemba.exobook.App.Companion.CHANNEL_ID
 import com.takusemba.exobook.R
-import java.util.*
+import java.util.ArrayList
 
 class MediaSessionSampleService : MediaBrowserServiceCompat() {
 

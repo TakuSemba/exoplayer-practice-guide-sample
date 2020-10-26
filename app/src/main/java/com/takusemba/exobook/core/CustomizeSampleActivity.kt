@@ -25,7 +25,7 @@ import com.google.android.exoplayer2.upstream.LoadErrorHandlingPolicy.LoadErrorI
 import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.App
 import com.takusemba.exobook.R
-import java.util.*
+import java.util.Collections
 
 class CustomizeSampleActivity : AppCompatActivity() {
 
