@@ -29,10 +29,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
-import com.google.android.exoplayer2.source.ConcatenatingMediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.takusemba.exobook.App.Companion.CHANNEL_ID
 import com.takusemba.exobook.R
 import java.util.ArrayList
@@ -91,7 +88,6 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
     }
 
     private val mediaSession by lazy { MediaSessionCompat(application, TAG) }
-    private val dataSourceFactory by lazy { DefaultDataSourceFactory(application) }
     private val player by lazy { SimpleExoPlayer.Builder(this).build() }
     private val mediaSessionConnector by lazy { MediaSessionConnector(mediaSession) }
 
@@ -134,9 +130,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
             ) {
                 val song = SONGS.find { it.id == mediaId } ?: return
                 val mediaItem = MediaItem.fromUri(Uri.parse(song.source))
-                val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(mediaItem)
-                player.setMediaSource(mediaSource)
+                player.setMediaItem(mediaItem)
                 player.prepare()
                 player.playWhenReady = playWhenReady
                 mediaSession.setMetadata(song.toMediaMetadata())
@@ -146,9 +140,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
             override fun onPrepareFromUri(uri: Uri, playWhenReady: Boolean, extras: Bundle?) {
                 val song = SONGS.find { it.source == uri.toString() } ?: return
                 val mediaItem = MediaItem.fromUri(uri)
-                val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(mediaItem)
-                player.setMediaSource(mediaSource)
+                player.setMediaItem(mediaItem)
                 player.prepare()
                 player.playWhenReady = playWhenReady
                 mediaSession.setMetadata(song.toMediaMetadata())
@@ -162,9 +154,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
             ) {
                 val song = SONGS.find { it.title == query } ?: return
                 val mediaItem = MediaItem.fromUri(Uri.parse(song.source))
-                val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(mediaItem)
-                player.setMediaSource(mediaSource)
+                player.setMediaItem(mediaItem)
                 player.prepare()
                 player.playWhenReady = playWhenReady
                 mediaSession.setMetadata(song.toMediaMetadata())
@@ -197,14 +187,9 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
 
         sessionToken = mediaSession.sessionToken
 
-        val concatenatingMediaSource = ConcatenatingMediaSource()
-        val mediaSourceFactory = ProgressiveMediaSource.Factory(dataSourceFactory)
-        SONGS.forEach { song ->
-            val mediaSource = mediaSourceFactory.createMediaSource(Uri.parse(song.source))
-            concatenatingMediaSource.addMediaSource(mediaSource)
-        }
+        val mediaItems = SONGS.map { song -> MediaItem.fromUri(song.source) }
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.setMediaSource(concatenatingMediaSource)
+        player.setMediaItems(mediaItems)
         player.prepare()
         player.play()
         player.addListener(object : Player.EventListener {

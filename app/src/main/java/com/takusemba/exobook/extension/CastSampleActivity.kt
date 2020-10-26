@@ -9,9 +9,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.cast.CastPlayer
 import com.google.android.exoplayer2.ext.cast.SessionAvailabilityListener
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.StyledPlayerView
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastContext
 import com.takusemba.exobook.R
@@ -66,12 +64,9 @@ class CastSampleActivity : AppCompatActivity() {
         playerView.player = player
 
         val mediaItem = MediaItem.fromUri(URI)
-        val dataSourceFactory = DefaultDataSourceFactory(this)
-        val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(mediaItem)
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.setMediaSource(mediaSource)
+        player.setMediaItem(mediaItem)
         player.prepare()
         player.play()
 
