@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.os.ResultReceiver
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_BROWSABLE
@@ -25,6 +26,8 @@ import android.support.v4.media.session.MediaSessionCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media2.common.MediaMetadata
 import androidx.media2.session.MediaSession
+import androidx.media2.session.SessionCommand
+import androidx.media2.session.SessionCommandGroup
 import com.google.android.exoplayer2.ControlDispatcher
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -189,7 +192,41 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
 
         override fun setPlayer(player: Player) {
             val sessionPlayerConnector = SessionPlayerConnector(player)
-            val sessionCallback = SessionCallbackBuilder(context, sessionPlayerConnector).build()
+            val allowedCommandProvider = object : SessionCallbackBuilder.AllowedCommandProvider {
+
+                val default = SessionCallbackBuilder.DefaultAllowedCommandProvider(context)
+
+                override fun onCommandRequest(
+                    session: MediaSession,
+                    controllerInfo: MediaSession.ControllerInfo,
+                    command: SessionCommand
+                ): Int {
+                    return default.onCommandRequest(session, controllerInfo, command)
+                }
+
+                override fun acceptConnection(
+                    session: MediaSession,
+                    controllerInfo: MediaSession.ControllerInfo
+                ): Boolean {
+                    return default.acceptConnection(session, controllerInfo) ||
+                            controllerInfo.packageName == "com.google.android.googlequicksearchbox"
+                }
+
+                override fun getAllowedCommands(
+                    session: MediaSession,
+                    controllerInfo: MediaSession.ControllerInfo,
+                    baseAllowedSessionCommand: SessionCommandGroup
+                ): SessionCommandGroup {
+                    return default.getAllowedCommands(
+                        session,
+                        controllerInfo,
+                        baseAllowedSessionCommand
+                    )
+                }
+            }
+            val sessionCallback = SessionCallbackBuilder(context, sessionPlayerConnector)
+                .setAllowedCommandProvider(allowedCommandProvider)
+                .build()
             mediaSession = MediaSession.Builder(context, sessionPlayerConnector)
                 .setSessionCallback(Executors.newSingleThreadExecutor(), sessionCallback)
                 .build()
