@@ -18,7 +18,6 @@ import com.takusemba.exobook.extension.CastSampleActivity
 import com.takusemba.exobook.extension.CodecSampleActivity
 import com.takusemba.exobook.extension.ImaSampleActivity
 import com.takusemba.exobook.extension.LeanbackSampleActivity
-import com.takusemba.exobook.extension.Media2SampleActivity
 import com.takusemba.exobook.extension.MediaSessionSampleActivity
 import com.takusemba.exobook.extension.NetworkSampleActivity
 import com.takusemba.exobook.extension.RtmpSampleActivity
@@ -110,7 +109,6 @@ class SampleAdapter : BaseExpandableListAdapter() {
                     Sample("Chapter 1 (IMA)", ImaSampleActivity::class.java),
                     Sample("Chapter 2 (Cast)", CastSampleActivity::class.java),
                     Sample("Chapter 3 (MediaSession)", MediaSessionSampleActivity::class.java),
-                    Sample("Chapter x (Media2)", Media2SampleActivity::class.java), // TODO あとで章を修正
                     Sample("Chapter 4 (Network)", NetworkSampleActivity::class.java),
                     Sample("Chapter 5 (Codec)", CodecSampleActivity::class.java),
                     Sample("Chapter 6 (Scheduler)", SchedulerSampleActivity::class.java),

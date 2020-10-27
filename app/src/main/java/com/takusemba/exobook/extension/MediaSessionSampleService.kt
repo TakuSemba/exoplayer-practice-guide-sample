@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.os.ResultReceiver
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_BROWSABLE
@@ -27,7 +26,6 @@ import androidx.media.MediaBrowserServiceCompat
 import androidx.media2.common.MediaMetadata
 import androidx.media2.session.MediaSession
 import com.google.android.exoplayer2.ControlDispatcher
-import com.google.android.exoplayer2.DefaultControlDispatcher
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -41,7 +39,7 @@ import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.takusemba.exobook.App.Companion.CHANNEL_ID_MEDIA_SESSION
 import java.util.ArrayList
 import java.util.concurrent.Executors
-import  com.google.android.exoplayer2.MediaMetadata as ExoMediaMetadata
+import com.google.android.exoplayer2.MediaMetadata as ExoMediaMetadata
 
 class MediaSessionSampleService : MediaBrowserServiceCompat() {
 
@@ -93,7 +91,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
     }
 
     private val player by lazy { SimpleExoPlayer.Builder(this).build() }
-    private val mediaSessionManager by lazy { Media2MediaSessionManager(this) }
+    private val mediaSessionManager by lazy { DefaultMediaSessionManager(this) }
 
     data class Song(
         val id: String,
@@ -129,7 +127,6 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
         player.setMediaItems(mediaItems)
         player.prepare()
         player.play()
-//        Handler().postDelayed({ player.play() }, 3000)
     }
 
     override fun onDestroy() {
@@ -205,7 +202,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
 
     }
 
-    class LegacyMediaSessionManager(context: Context) : MediaSessionManager {
+    class DefaultMediaSessionManager(context: Context) : MediaSessionManager {
 
         private val mediaSession by lazy { MediaSessionCompat(context, TAG) }
         private val mediaSessionConnector by lazy { MediaSessionConnector(mediaSession) }
