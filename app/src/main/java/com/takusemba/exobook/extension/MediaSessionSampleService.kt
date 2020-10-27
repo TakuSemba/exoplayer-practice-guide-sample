@@ -92,9 +92,9 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
         val album: String,
         val artist: String,
         val genre: String,
-        val source: String,
-        val image: String,
-        val duration: Long
+        val mediaUrl: String,
+        val iconUrl: String,
+        val duration: Long,
     )
 
     override fun onCreate() {
@@ -112,7 +112,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
         val mediaItems = SONGS.map { song ->
             MediaItem.Builder()
                 .setMediaId(song.id)
-                .setUri(song.source)
+                .setUri(song.mediaUrl)
                 .build()
         }
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
@@ -216,7 +216,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
                     extras: Bundle?
                 ) {
                     val song = SONGS.find { it.id == mediaId } ?: return
-                    val mediaItem = MediaItem.fromUri(Uri.parse(song.source))
+                    val mediaItem = MediaItem.fromUri(Uri.parse(song.mediaUrl))
                     player.setMediaItem(mediaItem)
                     player.prepare()
                     player.playWhenReady = playWhenReady
@@ -225,13 +225,8 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
                 }
 
                 override fun onPrepareFromUri(uri: Uri, playWhenReady: Boolean, extras: Bundle?) {
-                    val song = SONGS.find { it.source == uri.toString() } ?: return
-                    val mediaItem = MediaItem.fromUri(uri)
-                    player.setMediaItem(mediaItem)
-                    player.prepare()
-                    player.playWhenReady = playWhenReady
-                    mediaSession.setMetadata(song.toMediaMetadata())
-                    currentIndex = SONGS.indexOf(song)
+                    val song = SONGS.find { it.mediaUrl == uri.toString() } ?: return
+                    onPrepareFromMediaId(song.id, playWhenReady, extras)
                 }
 
                 override fun onPrepareFromSearch(
@@ -240,12 +235,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
                     extras: Bundle?
                 ) {
                     val song = SONGS.find { it.title == query } ?: return
-                    val mediaItem = MediaItem.fromUri(Uri.parse(song.source))
-                    player.setMediaItem(mediaItem)
-                    player.prepare()
-                    player.playWhenReady = playWhenReady
-                    mediaSession.setMetadata(song.toMediaMetadata())
-                    currentIndex = SONGS.indexOf(song)
+                    onPrepareFromMediaId(song.id, playWhenReady, extras)
                 }
 
                 override fun onCommand(
@@ -290,8 +280,8 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
                     .putString(METADATA_KEY_ALBUM, album)
                     .putString(METADATA_KEY_ARTIST, artist)
                     .putString(METADATA_KEY_GENRE, genre)
-                    .putString(METADATA_KEY_ALBUM_ART_URI, image)
-                    .putString(METADATA_KEY_DISPLAY_ICON_URI, image)
+                    .putString(METADATA_KEY_ALBUM_ART_URI, iconUrl)
+                    .putString(METADATA_KEY_DISPLAY_ICON_URI, iconUrl)
                     .putString(METADATA_KEY_TITLE, title)
                     .putLong(METADATA_KEY_DURATION, duration)
                     .build()
@@ -312,8 +302,8 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
                 album = "Irsen's Tale",
                 artist = "Kai Engel",
                 genre = "Ambient",
-                source = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/01_-_Intro_udonthear.mp3",
-                image = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/art.jpg",
+                mediaUrl = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/01_-_Intro_udonthear.mp3",
+                iconUrl = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/art.jpg",
                 duration = 63000L
             ),
             Song(
@@ -322,8 +312,8 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
                 album = "Irsen's Tale",
                 artist = "Kai Engel",
                 genre = "Ambient",
-                source = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/02_-_Leaving.mp3",
-                image = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/art.jpg",
+                mediaUrl = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/02_-_Leaving.mp3",
+                iconUrl = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/art.jpg",
                 duration = 170000L
             ),
             Song(
@@ -332,32 +322,22 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
                 album = "Irsen's Tale",
                 artist = "Kai Engel",
                 genre = "Ambient",
-                source = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/03_-_Irsens_Tale.mp3",
-                image = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/art.jpg",
+                mediaUrl = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/03_-_Irsens_Tale.mp3",
+                iconUrl = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/art.jpg",
                 duration = 164000L
             )
         )
 
-        private val MEDIA_METADATA = SONGS.map { song -> song.toMediaMetadata() }
+        private val MEDIA_ITEMS = SONGS.map { song -> song.toMediaItem() }
 
-        private val MEDIA_ITEMS = MEDIA_METADATA.map { metadata -> metadata.toMediaItem() }
-
-        private fun Song.toMediaMetadata(): MediaMetadataCompat {
-            return MediaMetadataCompat.Builder()
-                .putString(METADATA_KEY_MEDIA_ID, id)
-                .putString(METADATA_KEY_ALBUM, album)
-                .putString(METADATA_KEY_ARTIST, artist)
-                .putString(METADATA_KEY_GENRE, genre)
-                .putString(METADATA_KEY_ALBUM_ART_URI, image)
-                .putString(METADATA_KEY_DISPLAY_ICON_URI, image)
-                .putString(METADATA_KEY_TITLE, title)
-                .putLong(METADATA_KEY_DURATION, duration)
-                .build()
-        }
-
-        private fun MediaMetadataCompat.toMediaItem(): MediaBrowserCompat.MediaItem {
+        private fun Song.toMediaItem(): MediaBrowserCompat.MediaItem {
             return MediaBrowserCompat.MediaItem(
-                description,
+                MediaDescriptionCompat.Builder()
+                    .setMediaId(id)
+                    .setTitle(title)
+                    .setMediaUri(Uri.parse(mediaUrl))
+                    .setIconUri(Uri.parse(iconUrl))
+                    .build(),
                 FLAG_PLAYABLE or FLAG_BROWSABLE
             )
         }
