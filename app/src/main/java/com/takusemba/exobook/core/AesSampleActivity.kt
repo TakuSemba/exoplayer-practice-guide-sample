@@ -4,10 +4,11 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.BaseDataSource
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DataSpec
@@ -15,9 +16,9 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.TransferListener
 import com.google.android.exoplayer2.util.Assertions
 import com.google.android.exoplayer2.util.Log
-import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.R
 import java.io.IOException
+import kotlin.jvm.Throws
 
 class AesSampleActivity : AppCompatActivity() {
 
@@ -40,15 +41,17 @@ class AesSampleActivity : AppCompatActivity() {
 
     private fun initializePlayer() {
         val player = SimpleExoPlayer.Builder(this).build()
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
+        val mediaItem = MediaItem.fromUri(URI)
         val dataSourceFactory = DynamicDataSourceFactory(this)
-        val mediaSource = HlsMediaSource.Factory(dataSourceFactory).createMediaSource(URI)
+        val mediaSource = HlsMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(mediaSource)
-        player.playWhenReady = true
+        player.setMediaSource(mediaSource)
+        player.prepare()
+        player.play()
 
         this.player = player
     }
@@ -119,8 +122,10 @@ class AesSampleActivity : AppCompatActivity() {
         private val mainDataSource: DataSource,
         private val testKeyDataSource: TestKeyDataSource
     ) : DataSource {
+
         private var dataSource: DataSource? = null
-        override fun addTransferListener(transferListener: TransferListener?) {
+
+        override fun addTransferListener(transferListener: TransferListener) {
             mainDataSource.addTransferListener(transferListener)
             testKeyDataSource.addTransferListener(transferListener)
         }
@@ -154,8 +159,7 @@ class AesSampleActivity : AppCompatActivity() {
     }
 
     class DynamicDataSourceFactory(context: Context) : DataSource.Factory {
-        private val userAgent = Util.getUserAgent(context, "SampleApp")
-        private val httpDataSourceFactory = DefaultDataSourceFactory(context, userAgent)
+        private val httpDataSourceFactory = DefaultDataSourceFactory(context)
         private val testKeyDataSourceFactory = TestKeyDataSourceFactory()
         override fun createDataSource(): DataSource = DynamicDataSource(
             httpDataSourceFactory.createDataSource(),

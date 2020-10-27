@@ -1,12 +1,13 @@
 package com.takusemba.exobook.core
 
-import android.app.AlertDialog
+import android.app.Dialog
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.analytics.AnalyticsListener.EventTime
 import com.google.android.exoplayer2.analytics.PlaybackStats
@@ -15,12 +16,11 @@ import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.DebugTextViewHelper
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.ui.TrackSelectionDialogBuilder
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.EventLogger
 import com.google.android.exoplayer2.util.Log
-import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.R
 
 class DebugSampleActivity : AppCompatActivity() {
@@ -30,7 +30,7 @@ class DebugSampleActivity : AppCompatActivity() {
     private var debugTextViewHelper: DebugTextViewHelper? = null
     private var statsListener: PlaybackStatsListener? = null
 
-    private var dialog: AlertDialog? = null
+    private var dialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,13 +75,13 @@ class DebugSampleActivity : AppCompatActivity() {
         val player = SimpleExoPlayer.Builder(this)
             .setTrackSelector(trackSelector)
             .build()
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
-        val userAgent = Util.getUserAgent(this, "SampleApp")
-        val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
+        val mediaItem = MediaItem.fromUri(URI)
+        val dataSourceFactory = DefaultDataSourceFactory(this)
         val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(URI)
+            .createMediaSource(mediaItem)
 
         val eventLogger = EventLogger(trackSelector)
         player.addAnalyticsListener(eventLogger)
@@ -97,8 +97,9 @@ class DebugSampleActivity : AppCompatActivity() {
         player.addAnalyticsListener(statsListener)
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(mediaSource)
-        player.playWhenReady = true
+        player.setMediaSource(mediaSource)
+        player.prepare()
+        player.play()
 
         val debugTextView = findViewById<TextView>(R.id.debug_text_view)
         debugTextViewHelper = DebugTextViewHelper(player, debugTextView)

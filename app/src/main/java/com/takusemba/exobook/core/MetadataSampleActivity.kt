@@ -3,16 +3,13 @@ package com.takusemba.exobook.core
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.metadata.emsg.EventMessage
 import com.google.android.exoplayer2.metadata.id3.TextInformationFrame
-import com.google.android.exoplayer2.source.dash.DashMediaSource
-import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.util.Log
-import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.R
 
 class MetadataSampleActivity : AppCompatActivity() {
@@ -36,23 +33,18 @@ class MetadataSampleActivity : AppCompatActivity() {
 
     private fun initializePlayer() {
         val player = SimpleExoPlayer.Builder(this).build()
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
-        val userAgent = Util.getUserAgent(this, "SampleApp")
-        val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
-        val mediaSource = when (metadataType) {
-            MetadataType.ID3 -> {
-                HlsMediaSource.Factory(dataSourceFactory).createMediaSource(HLS_URI)
-            }
-            MetadataType.EMSG -> {
-                DashMediaSource.Factory(dataSourceFactory).createMediaSource(DASH_URI)
-            }
+        val mediaItem = when (metadataType) {
+            MetadataType.ID3 -> MediaItem.fromUri(HLS_URI)
+            MetadataType.EMSG -> MediaItem.fromUri(DASH_URI)
         }
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(mediaSource)
-        player.playWhenReady = true
+        player.setMediaItem(mediaItem)
+        player.prepare()
+        player.play()
 
         player.addMetadataOutput { metadata ->
             repeat(metadata.length()) { index ->
@@ -61,7 +53,10 @@ class MetadataSampleActivity : AppCompatActivity() {
                     Log.d("TimedMetadata", "${player.currentPosition}ms: ${data.value}")
                 }
                 if (data is EventMessage) {
-                    Log.d("EventMessage", "${player.currentPosition}ms: ${String(data.messageData)}")
+                    Log.d(
+                        "EventMessage",
+                        "${player.currentPosition}ms: ${String(data.messageData)}"
+                    )
                 }
             }
         }

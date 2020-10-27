@@ -3,15 +3,13 @@ package com.takusemba.exobook.extension
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.ima.ImaAdsLoader
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.source.ads.AdsLoader
-import com.google.android.exoplayer2.source.ads.AdsMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.Util
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.takusemba.exobook.R
 
 class ImaSampleActivity : AppCompatActivity() {
@@ -35,42 +33,57 @@ class ImaSampleActivity : AppCompatActivity() {
     }
 
     private fun initializePlayer() {
-        val player = SimpleExoPlayer.Builder(this).build()
-        val adsLoader = ImaAdsLoader.Builder(this)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
+
+        val mediaSourceFactory = DefaultMediaSourceFactory(this)
+            .setAdViewProvider(playerView)
+            .setAdsLoaderProvider {
+                initializeAdsLoader()
+                return@setAdsLoaderProvider adsLoader
+            }
+
+        val player = SimpleExoPlayer.Builder(this)
+            .setMediaSourceFactory(mediaSourceFactory)
+            .build()
+
+        this.player = player
+
+        playerView.player = player
+
+        val mediaItem = MediaItem.Builder()
+            .setUri(URI)
+            .setAdTagUri(AD_URI)
+            .build()
+
+        player.setAudioAttributes(AudioAttributes.DEFAULT, true)
+        player.setMediaItem(mediaItem)
+        player.prepare()
+        player.play()
+    }
+
+    private fun initializeAdsLoader() {
+        if (adsLoader != null) {
+            releaseAdsLoader()
+        }
+        adsLoader = ImaAdsLoader.Builder(this)
             .setMaxMediaBitrate(1_000_000)
             .setMediaLoadTimeoutMs(5000)
             .setMediaLoadTimeoutMs(5000)
             .setAdEventListener { adEvent -> /* do something */ }
-            .buildForAdTag(AD_URI)
-
-        val playerView = findViewById<PlayerView>(R.id.player_view)
-        playerView.player = player
-
-        val userAgent = Util.getUserAgent(this, "SampleApp")
-        val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
-        val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(URI)
-
-        adsLoader.setPlayer(player)
-        val adsMediaSource = AdsMediaSource(
-            mediaSource,
-            dataSourceFactory,
-            adsLoader,
-            playerView
-        )
-        player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(adsMediaSource)
-        player.playWhenReady = true
-
-        this.player = player
+            .build()
+        adsLoader?.setPlayer(player)
     }
 
     private fun releasePlayer() {
+        releaseAdsLoader()
         player?.stop()
         player?.release()
+        player = null
+    }
+
+    private fun releaseAdsLoader() {
         adsLoader?.stop()
         adsLoader?.release()
-        player = null
         adsLoader = null
     }
 

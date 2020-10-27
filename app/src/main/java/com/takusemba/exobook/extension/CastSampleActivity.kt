@@ -4,17 +4,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.cast.CastPlayer
-import com.google.android.exoplayer2.ext.cast.DefaultMediaItemConverter
-import com.google.android.exoplayer2.ext.cast.MediaItem
 import com.google.android.exoplayer2.ext.cast.SessionAvailabilityListener
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.MimeTypes
-import com.google.android.exoplayer2.util.Util
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastContext
 import com.takusemba.exobook.R
@@ -27,19 +22,16 @@ class CastSampleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
-        val mediaItemConverter = DefaultMediaItemConverter()
         val castContext = CastContext.getSharedInstance(this)
         val castPlayer = CastPlayer(castContext)
 
         castPlayer.setSessionAvailabilityListener(object : SessionAvailabilityListener {
 
             override fun onCastSessionAvailable() {
-                val item = MediaItem.Builder()
-                    .setUri(URI)
-                    .setMimeType(MimeTypes.VIDEO_MP4)
-                    .setTitle("Big Buck Bunny")
-                    .build()
-                castPlayer.loadItem(mediaItemConverter.toMediaQueueItem(item), 0L)
+                val item = MediaItem.fromUri(URI)
+                castPlayer.setMediaItem(item)
+                castPlayer.prepare()
+                castPlayer.play()
             }
 
             override fun onCastSessionUnavailable() {
@@ -68,17 +60,15 @@ class CastSampleActivity : AppCompatActivity() {
     private fun initializePlayer() {
         val player = SimpleExoPlayer.Builder(this).build()
 
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
-        val userAgent = Util.getUserAgent(this, "SampleApp")
-        val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
-        val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(URI)
+        val mediaItem = MediaItem.fromUri(URI)
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(mediaSource)
-        player.playWhenReady = true
+        player.setMediaItem(mediaItem)
+        player.prepare()
+        player.play()
 
         this.player = player
     }

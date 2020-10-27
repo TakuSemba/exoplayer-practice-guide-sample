@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.offline.Download
@@ -13,7 +14,7 @@ import com.google.android.exoplayer2.offline.DownloadManager
 import com.google.android.exoplayer2.offline.DownloadRequest
 import com.google.android.exoplayer2.offline.DownloadService
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.takusemba.exobook.App
 import com.takusemba.exobook.R
 
@@ -48,7 +49,8 @@ class SchedulerSampleActivity : AppCompatActivity() {
 
         override fun onDownloadChanged(
             downloadManager: DownloadManager,
-            download: Download
+            download: Download,
+            finalException: Exception?
         ) {
             val text = when (download.state) {
                 Download.STATE_DOWNLOADING -> {
@@ -121,16 +123,18 @@ class SchedulerSampleActivity : AppCompatActivity() {
 
     private fun initializePlayer() {
         val player = SimpleExoPlayer.Builder(this).build()
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
+        val mediaItem = MediaItem.fromUri(URI)
         val dataSourceFactory = (application as App).buildCacheDataSourceFactory()
         val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(URI)
+            .createMediaSource(mediaItem)
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(mediaSource)
-        player.playWhenReady = true
+        player.setMediaSource(mediaSource)
+        player.prepare()
+        player.play()
 
         this.player = player
     }
@@ -142,14 +146,7 @@ class SchedulerSampleActivity : AppCompatActivity() {
     }
 
     private fun addDownload() {
-        val downloadRequest = DownloadRequest(
-            CONTENT_ID,
-            DownloadRequest.TYPE_PROGRESSIVE,
-            URI,
-            emptyList(),
-            null,
-            null
-        )
+        val downloadRequest = DownloadRequest.Builder(CONTENT_ID, URI).build()
         DownloadService.sendAddDownload(
             this,
             SchedulerSampleService::class.java,

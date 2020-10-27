@@ -3,17 +3,11 @@ package com.takusemba.exobook.core
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.Format
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
-import com.google.android.exoplayer2.source.MergingMediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.source.SingleSampleMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.util.MimeTypes
-import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.R
 
 class CaptionSampleActivity : AppCompatActivity() {
@@ -38,40 +32,23 @@ class CaptionSampleActivity : AppCompatActivity() {
     private fun initializePlayer() {
         val player = SimpleExoPlayer.Builder(this).build()
 
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
+        playerView.setShowSubtitleButton(true)
 
-        val userAgent = Util.getUserAgent(this, "SampleApp")
-        val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
-        val videoSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(URI)
-        val captionMediaSource = when (TYPE) {
-            CaptionType.TTML -> {
-                val captionFormat = Format.createTextSampleFormat(
-                    /* id= */ null,
-                    /* sampleMimeType= */ MimeTypes.APPLICATION_TTML,
-                    /* selectionFlags= */ C.SELECTION_FLAG_DEFAULT,
-                    /* language= */ "en"
-                )
-                SingleSampleMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(TTML_URL, captionFormat, C.TIME_UNSET)
-            }
-            CaptionType.WEB_VTT -> {
-                val captionFormat = Format.createTextSampleFormat(
-                    /* id= */ null,
-                    /* sampleMimeType= */ MimeTypes.TEXT_VTT,
-                    /* selectionFlags= */ C.SELECTION_FLAG_DEFAULT,
-                    /* language= */ "en"
-                )
-                SingleSampleMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(WEB_VTT_URL, captionFormat, C.TIME_UNSET)
-            }
+        val captionMediaItem = when (TYPE) {
+            CaptionType.TTML -> MediaItem.Subtitle(TTML_URL, MimeTypes.APPLICATION_TTML, "en")
+            CaptionType.WEB_VTT -> MediaItem.Subtitle(WEB_VTT_URL, MimeTypes.TEXT_VTT, "en")
         }
-        val mediaSource = MergingMediaSource(videoSource, captionMediaSource)
+        val mediaItem = MediaItem.Builder()
+            .setUri(URI)
+            .setSubtitles(listOf(captionMediaItem))
+            .build()
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(mediaSource)
-        player.playWhenReady = true
+        player.setMediaItem(mediaItem)
+        player.prepare()
+        player.play()
 
         this.player = player
     }

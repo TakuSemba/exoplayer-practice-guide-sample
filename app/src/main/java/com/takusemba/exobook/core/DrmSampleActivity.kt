@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.drm.DefaultDrmSessionManager
@@ -11,10 +12,9 @@ import com.google.android.exoplayer2.drm.FrameworkMediaDrm
 import com.google.android.exoplayer2.drm.HttpMediaDrmCallback
 import com.google.android.exoplayer2.drm.LocalMediaDrmCallback
 import com.google.android.exoplayer2.source.dash.DashMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
-import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.R
 
 class DrmSampleActivity : AppCompatActivity() {
@@ -38,13 +38,13 @@ class DrmSampleActivity : AppCompatActivity() {
 
     private fun initializePlayer() {
         val player = SimpleExoPlayer.Builder(this).build()
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
-        val userAgent = Util.getUserAgent(this, "SampleApp")
-        val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
+        val dataSourceFactory = DefaultDataSourceFactory(this)
         val mediaSource = when (DRM_SCHEME_TYPE) {
             DrmSchemeType.CLEARKEY -> {
+                val mediaItem = MediaItem.fromUri(CLEARKEY_URI)
                 val drmCallback = LocalMediaDrmCallback(CLEARKEY_RESPONSE.toByteArray())
                 val drmSessionManager = DefaultDrmSessionManager.Builder()
                     .setUuidAndExoMediaDrmProvider(
@@ -54,12 +54,12 @@ class DrmSampleActivity : AppCompatActivity() {
                     .build(drmCallback)
                 DashMediaSource.Factory(dataSourceFactory)
                     .setDrmSessionManager(drmSessionManager)
-                    .createMediaSource(CLEARKEY_URI)
+                    .createMediaSource(mediaItem)
             }
             DrmSchemeType.WIDEVINE -> {
                 val drmCallback = HttpMediaDrmCallback(
                     "https://proxy.uat.widevine.com/proxy?provider=widevine_test",
-                    DefaultHttpDataSourceFactory(userAgent)
+                    DefaultHttpDataSourceFactory()
                 )
                 val drmSessionManager = DefaultDrmSessionManager.Builder()
                     .setUuidAndExoMediaDrmProvider(
@@ -67,15 +67,17 @@ class DrmSampleActivity : AppCompatActivity() {
                         FrameworkMediaDrm.DEFAULT_PROVIDER
                     )
                     .build(drmCallback)
+                val mediaItem = MediaItem.fromUri(WIDEVINE_URI)
                 DashMediaSource.Factory(dataSourceFactory)
                     .setDrmSessionManager(drmSessionManager)
-                    .createMediaSource(WIDEVINE_URI)
+                    .createMediaSource(mediaItem)
             }
         }
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(mediaSource)
-        player.playWhenReady = true
+        player.setMediaSource(mediaSource)
+        player.prepare()
+        player.play()
 
         this.player = player
     }

@@ -5,14 +5,13 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.Util
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.takusemba.exobook.R
 
+// This sample requires useExoPlayerLocally=true in app/build.gradle
 class CodecSampleActivity : AppCompatActivity() {
 
     private var player: SimpleExoPlayer? = null
@@ -37,17 +36,15 @@ class CodecSampleActivity : AppCompatActivity() {
             .setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER)
         val player = SimpleExoPlayer.Builder(this, renderersFactory).build()
 
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
-        val userAgent = Util.getUserAgent(this, "SampleApp")
-        val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
-        val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(URI)
+        val mediaItem = MediaItem.fromUri(URI)
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(mediaSource)
-        player.playWhenReady = true
+        player.setMediaItem(mediaItem)
+        player.prepare()
+        player.play()
 
         this.player = player
     }

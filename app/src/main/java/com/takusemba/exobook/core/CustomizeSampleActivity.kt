@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.DefaultRenderersFactory
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.mediacodec.MediaCodecInfo
@@ -13,18 +14,18 @@ import com.google.android.exoplayer2.mediacodec.MediaCodecSelector
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.BandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultLoadErrorHandlingPolicy
 import com.google.android.exoplayer2.upstream.HttpDataSource
 import com.google.android.exoplayer2.upstream.LoadErrorHandlingPolicy
+import com.google.android.exoplayer2.upstream.LoadErrorHandlingPolicy.LoadErrorInfo
 import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.App
 import com.takusemba.exobook.R
-import java.io.IOException
-import java.util.*
+import java.util.Collections
 
 class CustomizeSampleActivity : AppCompatActivity() {
 
@@ -75,7 +76,7 @@ class CustomizeSampleActivity : AppCompatActivity() {
                 DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS,
                 DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
             )
-            .createDefaultLoadControl()
+            .build()
 
         val player = SimpleExoPlayer.Builder(this, renderersFactory)
             .setTrackSelector(trackSelector)
@@ -83,18 +84,20 @@ class CustomizeSampleActivity : AppCompatActivity() {
             .setBandwidthMeter(getDefaultBandwidthMeter())
             .build()
 
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
-        val userAgent = Util.getUserAgent(this, "SampleApp")
-        val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
+
+        val mediaItem = MediaItem.fromUri(URI)
+        val dataSourceFactory = DefaultDataSourceFactory(this)
         val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
             .setLoadErrorHandlingPolicy(MyLoadErrorHandlingPolicy())
-            .createMediaSource(URI)
+            .createMediaSource(mediaItem)
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(mediaSource)
-        player.playWhenReady = true
+        player.setMediaSource(mediaSource)
+        player.prepare()
+        player.play()
 
         this.player = player
     }
@@ -140,12 +143,8 @@ class CustomizeSampleActivity : AppCompatActivity() {
     private class MyLoadErrorHandlingPolicy :
         LoadErrorHandlingPolicy by DefaultLoadErrorHandlingPolicy() {
 
-        override fun getRetryDelayMsFor(
-            dataType: Int,
-            loadDurationMs: Long,
-            exception: IOException?,
-            errorCount: Int
-        ): Long {
+        override fun getRetryDelayMsFor(loadErrorInfo: LoadErrorInfo): Long {
+            val exception = loadErrorInfo.exception
             if (exception is HttpDataSource.InvalidResponseCodeException) {
                 val responseCode = exception.responseCode
                 return if (responseCode in 500..599) RETRY_DELAY else C.TIME_UNSET
@@ -180,10 +179,6 @@ class CustomizeSampleActivity : AppCompatActivity() {
             val mutableMediaCodecInfos = exoDefaultMediaCodecInfos.toMutableList()
             applyWorkarounds(mutableMediaCodecInfos)
             return Collections.unmodifiableList(mutableMediaCodecInfos)
-        }
-
-        override fun getPassthroughDecoderInfo(): MediaCodecInfo? {
-            return exoDefault.passthroughDecoderInfo
         }
 
         private fun applyWorkarounds(codecInfos: MutableList<MediaCodecInfo>) {

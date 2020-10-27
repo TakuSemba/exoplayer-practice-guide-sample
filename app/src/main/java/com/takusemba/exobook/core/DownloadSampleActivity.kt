@@ -9,9 +9,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultRenderersFactory
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.drm.DefaultDrmSessionManager
+import com.google.android.exoplayer2.drm.DrmSessionEventListener
 import com.google.android.exoplayer2.drm.FrameworkMediaDrm
 import com.google.android.exoplayer2.drm.HttpMediaDrmCallback
 import com.google.android.exoplayer2.drm.OfflineLicenseHelper
@@ -22,7 +24,7 @@ import com.google.android.exoplayer2.offline.DownloadService
 import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.source.dash.DashUtil
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.takusemba.exobook.App
@@ -63,7 +65,8 @@ class DownloadSampleActivity : AppCompatActivity() {
 
         override fun onDownloadChanged(
             downloadManager: DownloadManager,
-            download: Download
+            download: Download,
+            finalException: Exception?
         ) {
             val text = when (download.state) {
                 Download.STATE_DOWNLOADING -> {
@@ -139,8 +142,7 @@ class DownloadSampleActivity : AppCompatActivity() {
         if (this.downloadHelper != null) {
             downloadHelper?.release()
         }
-        val userAgent = Util.getUserAgent(this, "SampleApp")
-        val httpDataSourceFactory = DefaultHttpDataSourceFactory(userAgent)
+        val httpDataSourceFactory = DefaultHttpDataSourceFactory()
         val downloadHelper = DownloadHelper.forDash(
             this,
             URI,
@@ -181,16 +183,17 @@ class DownloadSampleActivity : AppCompatActivity() {
                         httpDataSourceFactory.createDataSource(),
                         URI
                     )
-                    val drmInitData = DashUtil.loadDrmInitData(
+                    val format = DashUtil.loadFormatWithDrmInitData(
                         httpDataSourceFactory.createDataSource(),
                         dashManifest.getPeriod(0)
                     )
                     val offlineLicenseHelper = OfflineLicenseHelper.newWidevineInstance(
                         LICENSE_URL,
-                        httpDataSourceFactory
+                        httpDataSourceFactory,
+                        DrmSessionEventListener.EventDispatcher()
                     )
-                    offlineLicense = if (drmInitData != null) {
-                        offlineLicenseHelper.downloadLicense(drmInitData)
+                    offlineLicense = if (format != null) {
+                        offlineLicenseHelper.downloadLicense(format)
                     } else {
                         null
                     }
@@ -229,7 +232,7 @@ class DownloadSampleActivity : AppCompatActivity() {
 
     private fun initializePlayer() {
         val player = SimpleExoPlayer.Builder(this).build()
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
         val userAgent = Util.getUserAgent(this, "SampleApp")
@@ -254,13 +257,15 @@ class DownloadSampleActivity : AppCompatActivity() {
                 offlineLicense
             )
         }
+        val mediaItem = MediaItem.fromUri(URI)
         val mediaSource = DashMediaSource.Factory(dataSourceFactory)
             .setDrmSessionManager(drmSessionManager)
-            .createMediaSource(URI)
+            .createMediaSource(mediaItem)
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(mediaSource)
-        player.playWhenReady = true
+        player.setMediaSource(mediaSource)
+        player.prepare()
+        player.play()
 
         this.player = player
     }

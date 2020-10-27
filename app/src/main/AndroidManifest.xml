@@ -102,6 +102,7 @@
         <service android:name=".extension.MediaSessionSampleService">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
+                <action android:name="androidx.media2.session.MediaSessionService" />
             </intent-filter>
         </service>
         <service android:name=".extension.SchedulerSampleService">
@@ -110,7 +111,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
-
         <service
             android:name="com.google.android.exoplayer2.scheduler.PlatformScheduler$PlatformSchedulerService"
             android:exported="true"

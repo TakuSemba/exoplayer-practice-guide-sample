@@ -4,8 +4,10 @@
 
     <string name="menu_media_route_button">Media Route Button</string>
 
-    <string name="channel_name">Channel Name</string>
-    <string name="channel_description">Channel Description</string>
+    <string name="channel_name_download">Download Channel</string>
+    <string name="channel_description_download">This is Download Channel</string>
+    <string name="channel_name_media_session">MediaSession Channel</string>
+    <string name="channel_description_media_session">This is MediaSession Channel</string>
 
     <string name="button_start_background_playback">Start Background Playback</string>
     <string name="button_toggle_download">Toggle Download</string>

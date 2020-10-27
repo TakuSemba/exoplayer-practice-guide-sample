@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.ExoPlaybackException
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -17,9 +18,8 @@ import com.google.android.exoplayer2.source.LoopingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.Util
 import com.google.android.exoplayer2.video.VideoListener
 import com.takusemba.exobook.R
 
@@ -45,13 +45,13 @@ class BasicSampleActivity : AppCompatActivity() {
     private fun initializePlayer() {
         val player = SimpleExoPlayer.Builder(this).build()
 
-        val playerView = findViewById<PlayerView>(R.id.player_view)
+        val playerView = findViewById<StyledPlayerView>(R.id.player_view)
         playerView.player = player
 
-        val userAgent = Util.getUserAgent(this, "SampleApp")
-        val dataSourceFactory = DefaultDataSourceFactory(this, userAgent)
+        val dataSourceFactory = DefaultDataSourceFactory(this)
+        val mediaItem = MediaItem.fromUri(URI)
         val childMediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(URI)
+            .createMediaSource(mediaItem)
 
         val mediaSource = when (TYPE) {
             MediaSourceType.DEFAULT -> childMediaSource
@@ -62,32 +62,47 @@ class BasicSampleActivity : AppCompatActivity() {
 
         player.addListener(object : Player.EventListener {
 
-            override fun onTimelineChanged(timeline: Timeline, reason: Int) = Unit
+            override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) = Unit
+
+            override fun onSeekProcessed() = Unit
 
             override fun onTracksChanged(
                 trackGroups: TrackGroupArray,
                 trackSelections: TrackSelectionArray
             ) = Unit
 
-            override fun onLoadingChanged(isLoading: Boolean) = Unit
-
-            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) = Unit
-
-            override fun onPlaybackSuppressionReasonChanged(playbackSuppressionReason: Int) = Unit
-
-            override fun onIsPlayingChanged(isPlaying: Boolean) = Unit
-
-            override fun onRepeatModeChanged(repeatMode: Int) = Unit
-
-            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) = Unit
+            override fun onIsLoadingChanged(isLoading: Boolean) = Unit
 
             override fun onPlayerError(error: ExoPlaybackException) = Unit
 
+            override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) = Unit
+
+            override fun onLoadingChanged(isLoading: Boolean) = Unit
+
             override fun onPositionDiscontinuity(reason: Int) = Unit
 
-            override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) = Unit
+            override fun onRepeatModeChanged(repeatMode: Int) = Unit
 
-            override fun onSeekProcessed() = Unit
+            override fun onPlaybackStateChanged(state: Int) = Unit
+
+            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) = Unit
+
+            override fun onPlaybackSuppressionReasonChanged(playbackSuppressionReason: Int) = Unit
+
+            override fun onTimelineChanged(timeline: Timeline, reason: Int) = Unit
+
+            override fun onTimelineChanged(timeline: Timeline, manifest: Any?, reason: Int) = Unit
+
+            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) = Unit
+
+            override fun onIsPlayingChanged(isPlaying: Boolean) = Unit
+
+            override fun onExperimentalOffloadSchedulingEnabledChanged(
+                offloadSchedulingEnabled: Boolean
+            ) = Unit
+
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) = Unit
+
         })
 
         player.addAnalyticsListener(object : AnalyticsListener {})
@@ -101,8 +116,9 @@ class BasicSampleActivity : AppCompatActivity() {
         player.addTextOutput { cue -> }
 
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.prepare(mediaSource)
-        player.playWhenReady = true
+        player.setMediaSource(mediaSource)
+        player.prepare()
+        player.play()
 
         this.player = player
     }
