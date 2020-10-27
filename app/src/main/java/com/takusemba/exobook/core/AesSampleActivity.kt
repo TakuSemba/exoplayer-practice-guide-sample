@@ -18,6 +18,7 @@ import com.google.android.exoplayer2.util.Assertions
 import com.google.android.exoplayer2.util.Log
 import com.takusemba.exobook.R
 import java.io.IOException
+import kotlin.jvm.Throws
 
 class AesSampleActivity : AppCompatActivity() {
 
