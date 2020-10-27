@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.os.ResultReceiver
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_BROWSABLE
@@ -23,16 +24,24 @@ import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_TITLE
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.media.MediaBrowserServiceCompat
+import androidx.media2.common.MediaMetadata
+import androidx.media2.session.MediaSession
 import com.google.android.exoplayer2.ControlDispatcher
+import com.google.android.exoplayer2.DefaultControlDispatcher
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
+import com.google.android.exoplayer2.ext.media2.MediaSessionUtil
+import com.google.android.exoplayer2.ext.media2.SessionCallbackBuilder
+import com.google.android.exoplayer2.ext.media2.SessionPlayerConnector
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.takusemba.exobook.App.Companion.CHANNEL_ID_MEDIA_SESSION
 import java.util.ArrayList
+import java.util.concurrent.Executors
+import  com.google.android.exoplayer2.MediaMetadata as ExoMediaMetadata
 
 class MediaSessionSampleService : MediaBrowserServiceCompat() {
 
@@ -84,7 +93,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
     }
 
     private val player by lazy { SimpleExoPlayer.Builder(this).build() }
-    private val mediaSessionManager by lazy { LegacyMediaSessionManager(this) }
+    private val mediaSessionManager by lazy { Media2MediaSessionManager(this) }
 
     data class Song(
         val id: String,
@@ -100,25 +109,27 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
     override fun onCreate() {
         super.onCreate()
 
-        val mediaSessionToken = mediaSessionManager.getMediaSessionToken()
-
-        notificationManager.setMediaSessionToken(mediaSessionToken)
         notificationManager.setPlayer(player)
-
-        sessionToken = mediaSessionToken
-
         mediaSessionManager.setPlayer(player)
+
+        val mediaSessionToken = mediaSessionManager.getMediaSessionToken()
+        if (mediaSessionToken != null) {
+            notificationManager.setMediaSessionToken(mediaSessionToken)
+            sessionToken = mediaSessionToken
+        }
 
         val mediaItems = SONGS.map { song ->
             MediaItem.Builder()
                 .setMediaId(song.id)
                 .setUri(song.mediaUrl)
+                .setMediaMetadata(ExoMediaMetadata.Builder().setTitle(song.title).build())
                 .build()
         }
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
         player.setMediaItems(mediaItems)
         player.prepare()
         player.play()
+//        Handler().postDelayed({ player.play() }, 3000)
     }
 
     override fun onDestroy() {
@@ -149,7 +160,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
 
     private interface MediaSessionManager {
 
-        fun getMediaSessionToken(): MediaSessionCompat.Token
+        fun getMediaSessionToken(): MediaSessionCompat.Token?
 
         fun getTitle(): CharSequence
 
@@ -160,27 +171,46 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
         fun release()
     }
 
+    class Media2MediaSessionManager(private val context: Context) : MediaSessionManager {
+
+        private var mediaSession: MediaSession? = null
+
+        override fun getMediaSessionToken(): MediaSessionCompat.Token? {
+            val currentMediaSession = mediaSession ?: return null
+            return MediaSessionUtil.getSessionCompatToken(currentMediaSession)
+        }
+
+        override fun getTitle(): CharSequence {
+            val metadata = mediaSession?.player?.currentMediaItem?.metadata
+            return metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: "no title"
+        }
+
+        override fun getLargeIcon(): Bitmap? {
+            val metadata = mediaSession?.player?.currentMediaItem?.metadata
+            return metadata?.getBitmap(MediaMetadata.METADATA_KEY_ART)
+        }
+
+        override fun setPlayer(player: Player) {
+            val sessionPlayerConnector = SessionPlayerConnector(player)
+            val sessionCallback = SessionCallbackBuilder(context, sessionPlayerConnector).build()
+            mediaSession = MediaSession.Builder(context, sessionPlayerConnector)
+                .setSessionCallback(Executors.newSingleThreadExecutor(), sessionCallback)
+                .build()
+        }
+
+        override fun release() {
+            mediaSession?.close()
+            mediaSession = null
+        }
+
+    }
+
     class LegacyMediaSessionManager(context: Context) : MediaSessionManager {
 
         private val mediaSession by lazy { MediaSessionCompat(context, TAG) }
         private val mediaSessionConnector by lazy { MediaSessionConnector(mediaSession) }
 
-        private val eventListener by lazy {
-            object : Player.EventListener {
-
-                override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                    val index = SONGS.indexOfFirst { it.id == mediaItem?.mediaId }
-                    if (index != -1) {
-                        currentIndex = index
-                    }
-                }
-            }
-        }
-
-        private var currentIndex: Int = 0
-        private var player: Player? = null
-
-        override fun getMediaSessionToken(): MediaSessionCompat.Token {
+        override fun getMediaSessionToken(): MediaSessionCompat.Token? {
             return mediaSession.sessionToken
         }
 
@@ -201,7 +231,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
                     player: Player,
                     windowIndex: Int
                 ): MediaDescriptionCompat {
-                    return SONGS[currentIndex].toMediaMetadata().description
+                    return SONGS[windowIndex].toMediaMetadata().description
                 }
             }
             val playbackPreparer = object : MediaSessionConnector.PlaybackPreparer {
@@ -221,7 +251,6 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
                     player.prepare()
                     player.playWhenReady = playWhenReady
                     mediaSession.setMetadata(song.toMediaMetadata())
-                    currentIndex = SONGS.indexOf(song)
                 }
 
                 override fun onPrepareFromUri(uri: Uri, playWhenReady: Boolean, extras: Bundle?) {
@@ -256,18 +285,14 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
             mediaSessionConnector.setPlaybackPreparer(playbackPreparer)
             mediaSessionConnector.setPlayer(player)
 
-            mediaSession.setMetadata(SONGS[currentIndex].toMediaMetadata())
+            mediaSession.setMetadata(SONGS[0].toMediaMetadata())
             mediaSession.isActive = true
 
-            player.addListener(eventListener)
-            this.player = player
         }
 
         override fun release() {
             mediaSession.isActive = false
             mediaSessionConnector.setPlayer(null)
-            player?.removeListener(eventListener)
-            player = null
         }
 
         companion object {
