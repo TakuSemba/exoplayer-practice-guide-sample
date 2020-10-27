@@ -30,18 +30,15 @@ import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
-import com.takusemba.exobook.App.Companion.CHANNEL_ID
-import com.takusemba.exobook.R
+import com.takusemba.exobook.App.Companion.CHANNEL_ID_MEDIA_SESSION
 import java.util.ArrayList
 
 class MediaSessionSampleService : MediaBrowserServiceCompat() {
 
     private val notificationManager by lazy {
-        PlayerNotificationManager.createWithNotificationChannel(
+        PlayerNotificationManager(
             this,
-            CHANNEL_ID,
-            R.string.channel_name,
-            R.string.channel_description,
+            CHANNEL_ID_MEDIA_SESSION,
             NOTIFICATION_ID,
             object :
                 PlayerNotificationManager.MediaDescriptionAdapter {

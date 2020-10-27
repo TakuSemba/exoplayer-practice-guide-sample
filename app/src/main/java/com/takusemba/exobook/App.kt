@@ -32,7 +32,7 @@ class App : Application() {
             Executors.newFixedThreadPool(6)
         )
     }
-    val notificationHelper by lazy { DownloadNotificationHelper(this, CHANNEL_ID) }
+    val notificationHelper by lazy { DownloadNotificationHelper(this, CHANNEL_ID_DOWNLOAD) }
 
     val prefs: SharedPreferences by lazy {
         getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
@@ -42,9 +42,16 @@ class App : Application() {
         super.onCreate()
         NotificationUtil.createNotificationChannel(
             this,
-            CHANNEL_ID,
-            R.string.channel_name,
-            R.string.channel_description,
+            CHANNEL_ID_DOWNLOAD,
+            R.string.channel_name_download_name,
+            R.string.channel_description_download,
+            NotificationUtil.IMPORTANCE_DEFAULT
+        )
+        NotificationUtil.createNotificationChannel(
+            this,
+            CHANNEL_ID_MEDIA_SESSION,
+            R.string.channel_name_media_session,
+            R.string.channel_description_media_session,
             NotificationUtil.IMPORTANCE_DEFAULT
         )
     }
@@ -61,7 +68,8 @@ class App : Application() {
 
     companion object {
 
-        const val CHANNEL_ID = "channel-id"
+        const val CHANNEL_ID_DOWNLOAD = "channel-id-download"
+        const val CHANNEL_ID_MEDIA_SESSION = "channel-id-media-session"
         private const val DOWNLOAD_CONTENT_DIRECTORY = "downloads"
         private const val PREFERENCES_NAME = "SampleApp"
     }
