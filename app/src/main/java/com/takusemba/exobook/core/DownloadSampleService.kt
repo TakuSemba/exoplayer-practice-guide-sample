@@ -8,15 +8,15 @@ import com.google.android.exoplayer2.scheduler.PlatformScheduler
 import com.google.android.exoplayer2.scheduler.Scheduler
 import com.google.android.exoplayer2.util.NotificationUtil
 import com.takusemba.exobook.App
-import com.takusemba.exobook.App.Companion.CHANNEL_ID
+import com.takusemba.exobook.App.Companion.CHANNEL_ID_DOWNLOAD
 import com.takusemba.exobook.R
 
 class DownloadSampleService : DownloadService(
     NOTIFICATION_ID,
     DEFAULT_FOREGROUND_NOTIFICATION_UPDATE_INTERVAL,
-    CHANNEL_ID,
-    R.string.channel_name,
-    R.string.channel_description
+    CHANNEL_ID_DOWNLOAD,
+    R.string.channel_name_download,
+    R.string.channel_description_download
 ) {
 
     private val downloadListener = object : DownloadManager.Listener {

@@ -43,7 +43,7 @@ class App : Application() {
         NotificationUtil.createNotificationChannel(
             this,
             CHANNEL_ID_DOWNLOAD,
-            R.string.channel_name_download_name,
+            R.string.channel_name_download,
             R.string.channel_description_download,
             NotificationUtil.IMPORTANCE_DEFAULT
         )

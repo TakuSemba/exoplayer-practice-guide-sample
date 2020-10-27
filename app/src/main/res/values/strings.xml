@@ -4,7 +4,7 @@
 
     <string name="menu_media_route_button">Media Route Button</string>
 
-    <string name="channel_name_download_name">Download Channel</string>
+    <string name="channel_name_download">Download Channel</string>
     <string name="channel_description_download">This is Download Channel</string>
     <string name="channel_name_media_session">MediaSession Channel</string>
     <string name="channel_description_media_session">This is MediaSession Channel</string>
