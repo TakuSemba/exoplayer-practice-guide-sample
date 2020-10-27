@@ -3,20 +3,12 @@ package com.takusemba.exobook.extension
 import android.app.Notification
 import android.app.PendingIntent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_BROWSABLE
 import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ALBUM
-import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI
-import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ARTIST
-import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI
-import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DURATION
-import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_GENRE
-import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_MEDIA_ID
-import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_TITLE
+import android.support.v4.media.MediaDescriptionCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media2.session.MediaSession
 import com.google.android.exoplayer2.DefaultControlDispatcher
@@ -30,7 +22,6 @@ import com.google.android.exoplayer2.ext.media2.SessionCallbackBuilder
 import com.google.android.exoplayer2.ext.media2.SessionPlayerConnector
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.takusemba.exobook.App.Companion.CHANNEL_ID_MEDIA_SESSION
-import com.takusemba.exobook.R
 import java.util.ArrayList
 import java.util.concurrent.Executors
 import androidx.media2.common.MediaMetadata as Media2MediaMetadata
@@ -101,16 +92,14 @@ class Media2SampleService : MediaBrowserServiceCompat() {
             .build()
     }
 
-    private var currentIndex = 0
-
     data class Song(
         val id: String,
         val title: String,
         val album: String,
         val artist: String,
         val genre: String,
-        val source: String,
-        val image: String,
+        val mediaUrl: String,
+        val iconUrl: String,
         val duration: Long
     )
 
@@ -126,16 +115,11 @@ class Media2SampleService : MediaBrowserServiceCompat() {
 
         val mediaItems = SONGS.map { song ->
             MediaItem.Builder()
-                .setUri(song.source)
+                .setUri(song.mediaUrl)
                 .setMediaMetadata(MediaMetadata.Builder().setTitle(song.title).build())
                 .build()
         }
         player.setAudioAttributes(AudioAttributes.DEFAULT, true)
-        player.addListener(object : Player.EventListener {
-            override fun onPositionDiscontinuity(reason: Int) {
-                currentIndex = player.currentWindowIndex
-            }
-        })
         player.setMediaItems(mediaItems)
         player.prepare()
         player.play()
@@ -179,8 +163,8 @@ class Media2SampleService : MediaBrowserServiceCompat() {
                 album = "Irsen's Tale",
                 artist = "Kai Engel",
                 genre = "Ambient",
-                source = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/01_-_Intro_udonthear.mp3",
-                image = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/art.jpg",
+                mediaUrl = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/01_-_Intro_udonthear.mp3",
+                iconUrl = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/art.jpg",
                 duration = 63000L
             ),
             Song(
@@ -189,8 +173,8 @@ class Media2SampleService : MediaBrowserServiceCompat() {
                 album = "Irsen's Tale",
                 artist = "Kai Engel",
                 genre = "Ambient",
-                source = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/02_-_Leaving.mp3",
-                image = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/art.jpg",
+                mediaUrl = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/02_-_Leaving.mp3",
+                iconUrl = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/art.jpg",
                 duration = 170000L
             ),
             Song(
@@ -199,32 +183,22 @@ class Media2SampleService : MediaBrowserServiceCompat() {
                 album = "Irsen's Tale",
                 artist = "Kai Engel",
                 genre = "Ambient",
-                source = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/03_-_Irsens_Tale.mp3",
-                image = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/art.jpg",
+                mediaUrl = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/03_-_Irsens_Tale.mp3",
+                iconUrl = "https://storage.googleapis.com/uamp/Kai_Engel_-_Irsens_Tale/art.jpg",
                 duration = 164000L
             )
         )
 
-        private val MEDIA_METADATA = SONGS.map { song -> song.toMediaMetadata() }
+        private val MEDIA_ITEMS = SONGS.map { song -> song.toMediaItem() }
 
-        private val MEDIA_ITEMS = MEDIA_METADATA.map { metadata -> metadata.toMediaItem() }
-
-        private fun Song.toMediaMetadata(): MediaMetadataCompat {
-            return MediaMetadataCompat.Builder()
-                .putString(METADATA_KEY_MEDIA_ID, id)
-                .putString(METADATA_KEY_ALBUM, album)
-                .putString(METADATA_KEY_ARTIST, artist)
-                .putString(METADATA_KEY_GENRE, genre)
-                .putString(METADATA_KEY_ALBUM_ART_URI, image)
-                .putString(METADATA_KEY_DISPLAY_ICON_URI, image)
-                .putString(METADATA_KEY_TITLE, title)
-                .putLong(METADATA_KEY_DURATION, duration)
-                .build()
-        }
-
-        private fun MediaMetadataCompat.toMediaItem(): MediaBrowserCompat.MediaItem {
+        private fun Song.toMediaItem(): MediaBrowserCompat.MediaItem {
             return MediaBrowserCompat.MediaItem(
-                description,
+                MediaDescriptionCompat.Builder()
+                    .setMediaId(id)
+                    .setTitle(title)
+                    .setMediaUri(Uri.parse(mediaUrl))
+                    .setIconUri(Uri.parse(iconUrl))
+                    .build(),
                 FLAG_PLAYABLE or FLAG_BROWSABLE
             )
         }
