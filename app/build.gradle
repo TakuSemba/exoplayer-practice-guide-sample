@@ -40,6 +40,7 @@ dependencies {
     implementation "com.google.android.exoplayer:exoplayer-ui:2.12.0"
     implementation "com.google.android.exoplayer:extension-ima:2.12.0"
     implementation "com.google.android.exoplayer:extension-cast:2.12.0"
+    implementation "com.google.android.exoplayer:extension-media2:2.12.0"
     implementation "com.google.android.exoplayer:extension-mediasession:2.12.0"
     implementation "com.google.android.exoplayer:extension-okhttp:2.12.0"
     implementation "com.google.android.exoplayer:extension-cronet:2.12.0"

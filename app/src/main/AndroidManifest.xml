@@ -73,6 +73,9 @@
         <activity
             android:name=".extension.MediaSessionSampleActivity"
             android:theme="@style/AppTheme.Player.WithActionBar" />
+<!--        <activity-->
+<!--            android:name=".extension.Media2SampleActivity"-->
+<!--            android:theme="@style/AppTheme.Player.WithActionBar" />-->
         <activity
             android:name=".extension.NetworkSampleActivity"
             android:theme="@style/AppTheme.Player" />
@@ -104,13 +107,18 @@
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
+<!--        <service android:name=".extension.Media2SampleService">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="androidx.media2.session.MediaSessionService" />-->
+<!--                <action android:name="android.media.browse.MediaBrowserService" />-->
+<!--            </intent-filter>-->
+<!--        </service>-->
         <service android:name=".extension.SchedulerSampleService">
             <intent-filter>
                 <action android:name="com.google.android.exoplayer.downloadService.action.RESTART" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
-
         <service
             android:name="com.google.android.exoplayer2.scheduler.PlatformScheduler$PlatformSchedulerService"
             android:exported="true"
