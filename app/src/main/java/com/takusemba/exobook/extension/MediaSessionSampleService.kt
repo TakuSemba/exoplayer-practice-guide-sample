@@ -6,10 +6,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.os.ResultReceiver
 import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_BROWSABLE
 import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
@@ -26,15 +24,16 @@ import android.support.v4.media.session.MediaSessionCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media2.common.MediaMetadata
 import androidx.media2.session.MediaSession
-import androidx.media2.session.SessionCommand
-import androidx.media2.session.SessionCommandGroup
 import com.google.android.exoplayer2.ControlDispatcher
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
+import com.google.android.exoplayer2.ext.media2.MediaItemConverter
 import com.google.android.exoplayer2.ext.media2.MediaSessionUtil
 import com.google.android.exoplayer2.ext.media2.SessionCallbackBuilder
+import com.google.android.exoplayer2.ext.media2.SessionCallbackBuilder.DefaultAllowedCommandProvider
+import com.google.android.exoplayer2.ext.media2.SessionCallbackBuilder.MediaItemProvider
 import com.google.android.exoplayer2.ext.media2.SessionPlayerConnector
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
@@ -191,41 +190,52 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
         }
 
         override fun setPlayer(player: Player) {
-            val sessionPlayerConnector = SessionPlayerConnector(player)
-            val allowedCommandProvider = object : SessionCallbackBuilder.AllowedCommandProvider {
-
-                val default = SessionCallbackBuilder.DefaultAllowedCommandProvider(context)
-
-                override fun onCommandRequest(
-                    session: MediaSession,
-                    controllerInfo: MediaSession.ControllerInfo,
-                    command: SessionCommand
-                ): Int {
-                    return default.onCommandRequest(session, controllerInfo, command)
+            val mediaItemConverter = object : MediaItemConverter {
+                override fun convertToExoPlayerMediaItem(
+                    media2MediaItem: androidx.media2.common.MediaItem
+                ): MediaItem {
+                    val song = SONGS.find {
+                        it.id == media2MediaItem.metadata?.mediaId
+                    } ?: return MediaItem.Builder().build()
+                    return MediaItem.Builder()
+                        .setMediaId(song.id)
+                        .setUri(song.mediaUrl)
+                        .setMediaMetadata(ExoMediaMetadata.Builder().setTitle(song.title).build())
+                        .build()
                 }
 
-                override fun acceptConnection(
-                    session: MediaSession,
-                    controllerInfo: MediaSession.ControllerInfo
-                ): Boolean {
-                    return default.acceptConnection(session, controllerInfo) ||
-                            controllerInfo.packageName == "com.google.android.googlequicksearchbox"
+                override fun convertToMedia2MediaItem(
+                    exoPlayerMediaItem: MediaItem
+                ): androidx.media2.common.MediaItem {
+                    val song = SONGS.find {
+                        it.id == exoPlayerMediaItem.mediaId
+                    } ?: return androidx.media2.common.MediaItem.Builder().build()
+                    return androidx.media2.common.MediaItem.Builder()
+                        .setMetadata(song.toMediaMetadata())
+                        .build()
                 }
-
-                override fun getAllowedCommands(
+            }
+            val sessionPlayerConnector = SessionPlayerConnector(player, mediaItemConverter)
+            val allowedCommandProvider = DefaultAllowedCommandProvider(context)
+            allowedCommandProvider.setTrustedPackageNames(
+                listOf("com.google.android.googlequicksearchbox")
+            )
+            val mediaItemProvider = object : MediaItemProvider {
+                override fun onCreateMediaItem(
                     session: MediaSession,
                     controllerInfo: MediaSession.ControllerInfo,
-                    baseAllowedSessionCommand: SessionCommandGroup
-                ): SessionCommandGroup {
-                    return default.getAllowedCommands(
-                        session,
-                        controllerInfo,
-                        baseAllowedSessionCommand
-                    )
+                    mediaId: String
+                ): androidx.media2.common.MediaItem? {
+                    val song = SONGS.find { it.id == mediaId }
+                        ?: return androidx.media2.common.MediaItem.Builder().build()
+                    return androidx.media2.common.MediaItem.Builder()
+                        .setMetadata(song.toMediaMetadata())
+                        .build()
                 }
             }
             val sessionCallback = SessionCallbackBuilder(context, sessionPlayerConnector)
                 .setAllowedCommandProvider(allowedCommandProvider)
+                .setMediaItemProvider(mediaItemProvider)
                 .build()
             mediaSession = MediaSession.Builder(context, sessionPlayerConnector)
                 .setSessionCallback(Executors.newSingleThreadExecutor(), sessionCallback)
@@ -237,6 +247,22 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
             mediaSession = null
         }
 
+        companion object {
+
+            private fun Song.toMediaMetadata(): MediaMetadata {
+                return MediaMetadata.Builder()
+                    .putString(MediaMetadata.METADATA_KEY_MEDIA_ID, id)
+                    .putString(MediaMetadata.METADATA_KEY_ALBUM, album)
+                    .putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
+                    .putString(MediaMetadata.METADATA_KEY_GENRE, genre)
+                    .putString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI, iconUrl)
+                    .putString(MediaMetadata.METADATA_KEY_DISPLAY_ICON_URI, iconUrl)
+                    .putString(MediaMetadata.METADATA_KEY_TITLE, title)
+                    .putLong(MediaMetadata.METADATA_KEY_DURATION, duration)
+                    .putLong(MediaMetadata.METADATA_KEY_PLAYABLE, 1)
+                    .build()
+            }
+        }
     }
 
     class DefaultMediaSessionManager(context: Context) : MediaSessionManager {
@@ -397,7 +423,7 @@ class MediaSessionSampleService : MediaBrowserServiceCompat() {
                     .setMediaUri(Uri.parse(mediaUrl))
                     .setIconUri(Uri.parse(iconUrl))
                     .build(),
-                FLAG_PLAYABLE or FLAG_BROWSABLE
+                FLAG_PLAYABLE
             )
         }
     }
